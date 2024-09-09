@@ -13,5 +13,5 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 # setup GMX 
 RUN git clone -b heekun_testruns https://github.com/HeydenLabASU/imd-test.git
-RUN cd imd-test/gromacs-2023.5 && mkdir build && cd build && cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON && make && make check && sudo make install && source /usr/local/gromacs/bin/GMXRC
+RUN cd imd-test/gromacs-2023.5 && mkdir build && cd build && cmake .. -DGMX_GPU=CUDA -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON && make && make check && sudo make install && source /usr/local/gromacs/bin/GMXRC
 
