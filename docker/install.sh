@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH="${PATH}:${CUDA_HOME}/bin"
-mamba install git cmake cudatoolkit gcc=11 gxx=11 gfortran=11 zlib wget hdf5 -y
+mamba install git cmake cudatoolkit gcc=11 gxx=11 gfortran=11 zlib wget hdf5 fftw -y
 cd /opt/
 export HOME_DIR=${PWD}
 export CPATH=${CONDA_PREFIX}/include
@@ -32,7 +32,6 @@ mv tcl8.5.9-linux-x86_64-threaded tcl-threaded
 ./config Linux-x86_64-g++ --charm-arch multicore-linux-x86_64 --with-fftw3 --with-cuda --with-single-node-cuda
 cd Linux-x86_64-g++
 make -j ${NPROC}
-make install
 
 
 cd ${HOME_DIR}
@@ -42,12 +41,12 @@ git clone https://github.com/ljwoods2/lammps.git
 cd lammps
 mkdir build
 cd build
-cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes
+cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes -D PKG_GPU=yes
 cmake --build .
-make install -j ${NPROC}
 
 cd ${HOME_DIR}
 
 # test the installations
-gmx mdrun --help
-lm
+gmx mdrun 
+lmp 
+namd3 --help
