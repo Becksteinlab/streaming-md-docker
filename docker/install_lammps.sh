@@ -13,3 +13,5 @@ cd build
 cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes -D PKG_GPU=yes -DCMAKE_INSTALL_PREFIX=/usr/local/lammps
 cmake --build . -j ${NPROC}
 make install
+mkdir -p ~/bin
+ln -s /usr/local/lammps/bin/lmp /bin/lmp
