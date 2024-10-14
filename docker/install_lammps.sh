@@ -10,6 +10,6 @@ git clone https://github.com/ljwoods2/lammps.git
 cd lammps
 mkdir build
 cd build
-cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes -D PKG_GPU=yes
-cmake --build .
-lmp
+cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes -D PKG_GPU=yes -DCMAKE_INSTALL_PREFIX=/usr/local/lammps
+cmake --build . -j ${NPROC}
+make install
