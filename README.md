@@ -29,7 +29,7 @@ docker pull ghcr.io/becksteinlab/streaming-md-docker:main
 
 You can then run the container using:
 ```
-docker run -it streaming-md-docker:main
+docker run -it  ghcr.io/becksteinlab/streaming-md-docker:main
 ```
 
 # Using a GPU
@@ -37,5 +37,5 @@ docker run -it streaming-md-docker:main
 To run with a GPU exposed to your docker container, install the [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) and use the following
 
 ```bash
-docker run -it --runtime=nvidia --gpus=all docker pull ghcr.io/becksteinlab/streaming-md-docker:main
+docker run -it --runtime=nvidia --gpus=all  ghcr.io/becksteinlab/streaming-md-docker:main
 ```
