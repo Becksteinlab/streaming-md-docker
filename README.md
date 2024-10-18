@@ -24,7 +24,7 @@ docker run -it streaming_md_docker_local
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
 
 ```bash
-docker pull  ghcr.io/Becksteinlab/streaming-md-docker:main
+docker pull ghcr.io/becksteinlab/streaming-md-docker:main
 ```
 
 You can then run the container using:
