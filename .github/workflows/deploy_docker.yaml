@@ -15,6 +15,22 @@ env:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        engine: [gromacs, lammps, namd]
+        arch: [amd64]
+        gmx_opts:
+          - ""
+          - "-DGMX_GPU=CUDA"
+          - "-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON"
+          - "-DGMX_GPU=CUDA -DGMX_MPI=ON"
+        lmp_opts:
+          - ""
+          - "-D PKG_GPU=on -D GPU_API=cuda"
+          - "-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes"
+        namd_opts:
+          - ""
+          - "--with-cuda"
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
@@ -30,6 +46,25 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert compiler options to simple tag suffix
+        id: tag_suffix
+        run: |
+          if [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"THREAD"* ]]; then
+            echo "tag_suffix=GPU-Thread-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"MPI"* ]]; then
+            echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"GPU"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "lammps" && "${{ matrix.lmp_opts }}" == *"MPI"* ]]; then
+            echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "lammps" && "${{ matrix.lmp_opts }}" == *"GPU"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "namd" && "${{ matrix.namd_opts }}" == *"cuda"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          else
+            echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
+          fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -42,7 +77,11 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: docker
+          context: ./docker/${{ matrix.engine }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.engine }}-${{ env.tag_suffix }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GMX_OPTS=${{ matrix.gmx_opts }}
+            LMP_OPTS=${{ matrix.lmp_opts }}
+            NAMD_OPTS=${{ matrix.namd_opts }}

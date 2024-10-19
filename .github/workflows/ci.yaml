@@ -13,6 +13,23 @@ jobs:
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
+    
+    strategy:
+      matrix:
+        engine: [gromacs, lammps, namd]
+        arch: [amd64]
+        gmx_opts:
+          - ""
+          - "-DGMX_GPU=CUDA"
+          - "-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON"
+          - "-DGMX_GPU=CUDA -DGMX_MPI=ON"
+        lmp_opts:
+          - ""
+          - "-D PKG_GPU=on -D GPU_API=cuda"
+          - "-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes"
+        namd_opts:
+          - ""
+          - "--with-cuda"
 
     steps:
       - name: Checkout repository
@@ -21,8 +38,32 @@ jobs:
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
+
+      - name: Convert compiler options to simple tag suffix
+        id: tag_suffix
+        run: |
+          if [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"THREAD"* ]]; then
+            echo "tag_suffix=GPU-Thread-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"MPI"* ]]; then
+            echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "gromacs" && "${{ matrix.gmx_opts }}" == *"GPU"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "lammps" && "${{ matrix.lmp_opts }}" == *"MPI"* ]]; then
+            echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "lammps" && "${{ matrix.lmp_opts }}" == *"GPU"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          elif [[ "${{ matrix.engine }}" == "namd" && "${{ matrix.namd_opts }}" == *"cuda"* ]]; then
+            echo "tag_suffix=GPU" >> $GITHUB_ENV
+          else
+            echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
+          fi
+      
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: docker
+          context: ./docker/${{ matrix.engine }}
           push: false
+          build-args: |
+            GMX_OPTS=${{ matrix.gmx_opts }}
+            LMP_OPTS=${{ matrix.lmp_opts }}
+            NAMD_OPTS=${{ matrix.namd_opts }}
