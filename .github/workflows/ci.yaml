@@ -24,10 +24,7 @@ jobs:
         steps:
           - name: Checkout repository
             uses: actions/checkout@v4
-          # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-          - name: Log in to the Container registry
-            uses: docker/login-action@v3
-    
+
           - name: Convert compiler options to simple tag suffix
             id: tag_suffix
             run: |
@@ -61,14 +58,10 @@ jobs:
       # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
       permissions:
         contents: read
-        packages: write
-        # 
+        
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
-        # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-        - name: Log in to the Container registry
-          uses: docker/login-action@v3
   
         - name: Convert compiler options to simple tag suffix
           id: tag_suffix
@@ -104,9 +97,6 @@ jobs:
         steps:
           - name: Checkout repository
             uses: actions/checkout@v4
-          # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-          - name: Log in to the Container registry
-            uses: docker/login-action@v3
     
           - name: Convert compiler options to simple tag suffix
             id: tag_suffix
