@@ -12,6 +12,7 @@ export NPROC=$(nproc)
 # Setup NAMD
 git clone https://github.com/amruthesht/namd-3.0.git
 cd namd-3.0
+git checkout IMDv3-dev
 tar xf charm-8.0.0.tar
 cd charm-8.0.0
 ./build charm++ multicore-linux-x86_64 -j ${NPROC} --with-production --libdir=${CONDA_PREFIX}/lib --incdir=${CONDA_PREFIX}/include
