@@ -17,7 +17,7 @@ tar xf charm-8.0.0.tar
 cd charm-8.0.0
 ./build charm++ multicore-linux-x86_64 -j ${NPROC} --with-production --libdir=${CONDA_PREFIX}/lib --incdir=${CONDA_PREFIX}/include
 cd ../
-./config Linux-x86_64-g++ --charm-arch multicore-linux-x86_64 --with-fftw3 --with-cuda  --tcl-prefix ${CONDA_PREFIX}  --cxx-opts -L${CONDA_PREFIX}/lib  --cc-opts -L${CONDA_PREFIX}/lib
+./config Linux-x86_64-g++ ${1} --charm-arch multicore-linux-x86_64 --with-fftw3 --tcl-prefix ${CONDA_PREFIX}  --cxx-opts -L${CONDA_PREFIX}/lib  --cc-opts -L${CONDA_PREFIX}/lib
 cd Linux-x86_64-g++
 make -j ${NPROC}
 ln -s /opt/namd-3.0/Linux-x86_64-g++/namd3  /bin/namd3

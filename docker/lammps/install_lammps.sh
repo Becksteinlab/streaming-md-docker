@@ -11,7 +11,7 @@ cd lammps
 git checkout imd-v3
 mkdir build
 cd build
-cmake ../cmake/ -D PKG_MISC=yes -D PKG_H5MD=yes -D PKG_GPU=yes -DCMAKE_INSTALL_PREFIX=/opt/lammps_build
+cmake ../cmake/ ${1} -D PKG_MISC=yes -D PKG_H5MD=yes -DCMAKE_INSTALL_PREFIX=/opt/lammps_build
 cmake --build . -j ${NPROC}
 make install
 ln -s /opt/lammps_build/bin/lmp /bin/lmp
