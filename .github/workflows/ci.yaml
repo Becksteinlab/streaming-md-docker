@@ -120,8 +120,7 @@ jobs:
         strategy:
           matrix:
             arch: [amd64]
-            build: [cpu, gpu]
-            suffix: ["Common-CPU", "Common-GPU"]
+            build: ["Common-CPU", "Common-GPU"]
 
         permissions:
           contents: read
@@ -133,7 +132,7 @@ jobs:
           - name: Option
             id: option
             run: |
-              if [ "${{ matrix.build }}" == "cpu" ]; then
+              if [ "${{ matrix.build }}" == "Common-CPU" ]; then
                 echo "NAMD_OPTS=" >> $GITHUB_ENV
                 echo "GMX_OPTS=" >> $GITHUB_ENV
                 echo "LMP_OPTS=" >> $GITHUB_ENV
