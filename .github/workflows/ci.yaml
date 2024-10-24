@@ -114,3 +114,30 @@ jobs:
               push: false
               build-args: |
                 NAMD_OPTS=${{ matrix.namd_opts }}
+
+    build-common-image:
+        runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            arch: [amd64]
+            namd_opts: ["", "--with-cuda"]
+            gmx_opts: ["", "-DGMX_GPU=CUDA"]
+            lmp_opts: ["", "-D PKG_GPU=on -D GPU_API=cuda"]
+            suffix: ["Common-CPU", "Common-GPU"]
+
+        permissions:
+          contents: read
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+    
+          - name: Build and push Docker image
+            uses: docker/build-push-action@v5
+            with:
+              context: ./docker/common
+              push: false
+              build-args: |
+                NAMD_OPTS=${{ matrix.namd_opts }}
+                GMX_OPTS=${{ matrix.gmx_opts }}
+                LMP_OPTS=${{ matrix.lmp_opts }}
