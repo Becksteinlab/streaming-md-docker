@@ -20,7 +20,6 @@ cd ../
 ./config Linux-x86_64-g++ ${1} --charm-arch multicore-linux-x86_64 --with-fftw3 --tcl-prefix ${CONDA_PREFIX}  --cxx-opts -L${CONDA_PREFIX}/lib  --cc-opts -L${CONDA_PREFIX}/lib
 cd Linux-x86_64-g++
 make -j ${NPROC}
-ln -s /opt/namd-3.0/Linux-x86_64-g++/namd3  /bin/namd3
 
 mkdir /opt/namd-build
 mv /opt/namd-3.0/Linux-x86_64-g++/namd3 /opt/namd-build/
