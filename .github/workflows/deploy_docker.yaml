@@ -63,7 +63,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/GROMACS
+          context: ./docker/gromacs
           push: true
           tags: ${{ steps.meta.outputs.tags }}-GROMACS-${{ env.tag_suffix }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -168,7 +168,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/NAMD
+          context: ./docker/namd
           push: true
           tags: ${{ steps.meta.outputs.tags }}-NAMD-${{ env.tag_suffix }}
           labels: ${{ steps.meta.outputs.labels }}
