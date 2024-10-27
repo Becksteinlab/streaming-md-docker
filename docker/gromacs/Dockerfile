@@ -1,5 +1,5 @@
 # based on conda-forge linux image
-FROM condaforge/linux-anvil-cuda:11.8 as build
+FROM condaforge/linux-anvil-cuda:11.8 AS build
 
 ARG GMX_OPTS=""
 

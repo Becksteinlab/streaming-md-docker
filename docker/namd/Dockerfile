@@ -1,5 +1,5 @@
 # based on conda-forge linux image
-FROM condaforge/linux-anvil-cuda:11.8
+FROM condaforge/linux-anvil-cuda:11.8 AS build
 
 ARG NAMD_OPTS=""
 
