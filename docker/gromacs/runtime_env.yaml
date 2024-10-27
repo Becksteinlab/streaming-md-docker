@@ -1,0 +1,14 @@
+name: env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - gfortran=11
+  - zlib
+  - hdf5
+  - fftw
+  - tk
+  - hdf5
+  - openmp
+  - openmpi
+  
