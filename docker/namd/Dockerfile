@@ -9,6 +9,7 @@ RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install
 
 # Delete the heavy environment but keep conda binaries
 RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
+RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
 # CUDA toolkit is massive, so use a smaller image for the runtime
 FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
