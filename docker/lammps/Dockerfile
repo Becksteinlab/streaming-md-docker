@@ -7,12 +7,18 @@ COPY . .
 RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
 RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh $LMP_OPTS
 
-RUN rm -rf /opt/lammps
+# Delete the heavy environment but keep conda binaries
+RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 
-# Don't need development tools in the final image
-RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && conda remove cudatoolkit -y
-# Removes ~2GB of conda cache
-RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && conda clean --all -y
+# CUDA toolkit is massive, so use a smaller image for the runtime
+FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
+
+COPY --from=build /opt/conda /opt/conda
+# Create the new lightweight env
+RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
+
+COPY --from=build /opt/lammps_build /opt/lammps_build
+RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
 
 ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
 CMD [ "/bin/bash" ]

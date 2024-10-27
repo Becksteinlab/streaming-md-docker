@@ -23,4 +23,3 @@ make -j ${NPROC}
 
 mkdir /opt/namd-build
 mv /opt/namd-3.0/Linux-x86_64-g++/namd3 /opt/namd-build/
-ln -s /opt/namd-build/namd3  /bin/namd3
