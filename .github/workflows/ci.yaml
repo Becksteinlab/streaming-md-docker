@@ -22,6 +22,15 @@ jobs:
         permissions:
           contents: read
         steps:
+          - name: Free disk space
+            uses: jlumbroso/free-disk-space@main
+            with:
+              android: true
+              dotnet: true
+              haskell: true
+              large-packages: true
+              swap-storage: true
+          
           - name: Checkout repository
             uses: actions/checkout@v4
 
@@ -60,6 +69,15 @@ jobs:
         contents: read
         
       steps:
+        - name: Free disk space
+          uses: jlumbroso/free-disk-space@main
+          with:
+            android: true
+            dotnet: true
+            haskell: true
+            large-packages: true
+            swap-storage: true
+          
         - name: Checkout repository
           uses: actions/checkout@v4
   
@@ -95,6 +113,15 @@ jobs:
           contents: read
 
         steps:
+          - name: Free disk space
+            uses: jlumbroso/free-disk-space@main
+            with:
+              android: true
+              dotnet: true
+              haskell: true
+              large-packages: true
+              swap-storage: true
+
           - name: Checkout repository
             uses: actions/checkout@v4
     
@@ -126,6 +153,15 @@ jobs:
           contents: read
 
         steps:
+          - name: Free disk space
+            uses: jlumbroso/free-disk-space@main
+            with:
+              android: true
+              dotnet: true
+              haskell: true
+              large-packages: true
+              swap-storage: true
+
           - name: Checkout repository
             uses: actions/checkout@v4
 
@@ -133,14 +169,15 @@ jobs:
             id: option
             run: |
               if [ "${{ matrix.build }}" == "Common-CPU" ]; then
-                echo "NAMD_OPTS=" >> $GITHUB_ENV
-                echo "GMX_OPTS=" >> $GITHUB_ENV
-                echo "LMP_OPTS=" >> $GITHUB_ENV
+                echo 'NAMD_OPTS=""' >> $GITHUB_ENV
+                echo 'GMX_OPTS=""' >> $GITHUB_ENV
+                echo 'LMP_OPTS=""' >> $GITHUB_ENV
               else
-                echo "NAMD_OPTS=--with-cuda" >> $GITHUB_ENV
-                echo "GMX_OPTS=-DGMX_GPU=CUDA" >> $GITHUB_ENV
-                echo "LMP_OPTS=-D PKG_GPU=on -D GPU_API=cuda" >> $GITHUB_ENV
+                echo 'NAMD_OPTS="--with-cuda"' >> $GITHUB_ENV
+                echo 'GMX_OPTS="-DGMX_GPU=CUDA"' >> $GITHUB_ENV
+                echo 'LMP_OPTS="-D PKG_GPU=on -D GPU_API=cuda"' >> $GITHUB_ENV
               fi
+
     
           - name: Build and push Docker image
             uses: docker/build-push-action@v5
