@@ -14,4 +14,4 @@ cd build
 cmake .. ${1} -DCUDA_TOOLKIT_ROOT_DIR=${CUDA_HOME} -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=OFF -DCMAKE_INSTALL_PREFIX=/opt/gromacs_build -DCMAKE_CXX_FLAGS="-L${CONDA_PREFIX}/lib -I${CONDA_PREFIX}/include"
 make -j ${NPROC}
 make install -j ${NPROC}
-ln -s /opt/gromacs_build/bin/gmx /bin/gmx
+

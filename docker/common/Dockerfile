@@ -1,5 +1,5 @@
 # based on conda-forge linux image
-FROM condaforge/linux-anvil-cuda:11.8
+FROM condaforge/linux-anvil-cuda:11.8 AS build
 
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
@@ -11,13 +11,24 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_
 RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_gromacs.sh $GMX_OPTS
 RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_namd.sh $NAMD_OPTS
 
-# Remove source code, only keeping binaries
-RUN rm -rf /opt/lammps /opt/gromacs /opt/namd-3.0
+# Delete the heavy environment but keep conda binaries
+RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 
-# Don't need development tools in the final image
-RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && conda remove cudatoolkit -y
-# Removes ~2GB of conda cache
-RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && conda clean --all -y
+# CUDA toolkit is massive, so use a smaller image for the runtime
+FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
+
+COPY --from=build /opt/conda /opt/conda
+# Create the new lightweight env
+RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
+
+COPY --from=build /opt/gromacs_build /opt/gromacs_build
+RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
+
+COPY --from=build /opt/lammps_build /opt/lammps_build
+RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
+
+COPY --from=build /opt/namd_build /opt/namd-build
+RUN ln -s /opt/namd-build/namd3  /bin/namd3
 
 ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
 CMD [ "/bin/bash" ]
