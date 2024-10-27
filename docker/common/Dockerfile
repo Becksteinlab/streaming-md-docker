@@ -19,7 +19,12 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
 
 COPY . .
-COPY --from=build /opt/conda /opt/conda
+COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
+RUN /opt/docker/bin/run_commands
+
+COPY --from=build /opt/docker/bin/entrypoint /opt/docker/bin/entrypoint
+COPY --from=build /opt/docker/bin/entrypoint_source /opt/docker/bin/entrypoint_source
+
 # Create the new lightweight env
 RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
 
