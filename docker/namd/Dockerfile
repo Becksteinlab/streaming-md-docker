@@ -15,7 +15,6 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
 
 COPY . .
-COPY --from=build /opt/conda /opt/conda
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
