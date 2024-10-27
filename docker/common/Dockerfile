@@ -27,7 +27,7 @@ RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
 COPY --from=build /opt/lammps_build /opt/lammps_build
 RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
 
-COPY --from=build /opt/namd_build /opt/namd-build
+COPY --from=build /opt/namd-build /opt/namd-build
 RUN ln -s /opt/namd-build/namd3  /bin/namd3
 
 ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
