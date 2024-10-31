@@ -2,13 +2,19 @@
 
 The following builds a container containing LAMMPS, GROMACS and NAMD ready for use with the IMD v3 streaming interface.
 
-
 # Building
 
-To build the containers, use the below:
+To build the containers from source, select the directory containing
+the script for the simulation engine you want to build. The "common"
+directory contains a Dockerfile which will build all 3 simulation engines.
 
+Compiler arguments for MPI and GPU acceleration can be passed through
+the following build arguments as follows:
 ```bash
-docker build . -t streaming_md_docker_local --progress=plain
+docker buildx build -t streaming_md_docker_local \
+    --build-arg NAMD_OPTS="--with-cuda" \
+    --build-arg GMX_OPTS="-DGMX_GPU=CUDA" \
+    --build-arg LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" common
 ```
 
 You can then run the container using:
@@ -24,12 +30,12 @@ docker run -it streaming_md_docker_local
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
 
 ```bash
-docker pull ghcr.io/becksteinlab/streaming-md-docker:main
+docker pull ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```
 
 You can then run the container using:
 ```
-docker run -it  ghcr.io/becksteinlab/streaming-md-docker:main
+docker run -it  ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```
 
 # Using a GPU
@@ -37,5 +43,5 @@ docker run -it  ghcr.io/becksteinlab/streaming-md-docker:main
 To run with a GPU exposed to your docker container, install the [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) and use the following
 
 ```bash
-docker run -it --runtime=nvidia --gpus=all  ghcr.io/becksteinlab/streaming-md-docker:main
+docker run -it --runtime=nvidia --gpus=all  ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```

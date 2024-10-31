@@ -13,11 +13,7 @@ jobs:
         strategy:
           matrix:
             arch: [amd64]
-            gmx_opts:
-              - ""
-              - "-DGMX_GPU=CUDA"
-              - "-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON"
-              - "-DGMX_GPU=CUDA -DGMX_MPI=ON"
+            tag_suffix: [GPU, GPU-Thread-MPI, GPU-Node-MPI]
         # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
         permissions:
           contents: read
@@ -35,16 +31,14 @@ jobs:
             uses: actions/checkout@v4
 
           - name: Convert compiler options to simple tag suffix
-            id: tag_suffix
+            id: GMX_OPTS
             run: |
-              if [[ "${{ matrix.gmx_opts }}" == *"THREAD"* ]]; then
-                echo "tag_suffix=GPU-Thread-MPI" >> $GITHUB_ENV
-              elif [[ "${{ matrix.gmx_opts }}" == *"MPI"* ]]; then
-                echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
-              elif [[  "${{ matrix.gmx_opts }}" == *"GPU"* ]]; then
-                echo "tag_suffix=GPU" >> $GITHUB_ENV
-              else
-                echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
+              if [[ "${{ matrix.tag_suffix }}" == "GPU-Thread-MPI" ]]; then
+                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON" >> $GITHUB_ENV
+              elif [[ "${{ matrix.tag_suffix }}" == "GPU-Node-MPI" ]]; then
+                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_MPI=ON"  >> $GITHUB_ENV
+              elif [[  "${{ matrix.tag_suffix }}" == "GPU" ]]; then
+                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_MPI=OFF" >> $GITHUB_ENV
               fi
 
           - name: Build and push Docker image
@@ -53,17 +47,14 @@ jobs:
               context: ./docker/gromacs
               push: false
               build-args: 
-                GMX_OPTS=${{ matrix.gmx_opts }}
+                GMX_OPTS=${{ matrix.GMX_OPTS }}
 
     build-lammps-image:
       runs-on: ubuntu-latest
       strategy:
         matrix:
           arch: [amd64]
-          lmp_opts:
-            - ""
-            - "-D PKG_GPU=on -D GPU_API=cuda"
-            - "-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes"
+          tag_suffix: ["GPU-Node-MPI", "GPU"]
       # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
       permissions:
         contents: read
@@ -82,14 +73,12 @@ jobs:
           uses: actions/checkout@v4
   
         - name: Convert compiler options to simple tag suffix
-          id: tag_suffix
+          id: LMP_OPTS
           run: |
-            if [[ "${{ matrix.lmp_opts }}" == *"MPI"* ]]; then
-              echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
-            elif [[ "${{ matrix.lmp_opts }}" == *"GPU"* ]]; then
-              echo "tag_suffix=GPU" >> $GITHUB_ENV
-            else
-              echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
+            if [[ "${{ matrix.tag_suffix }}" == "GPU-Node-MPI" ]]; then
+              echo LMP_OPTS="-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes" >> $GITHUB_ENV
+            elif [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
+              echo LMP_OPTS="-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MI=no" >> $GITHUB_ENV
             fi
 
         - name: Build and push Docker image
@@ -98,16 +87,14 @@ jobs:
             context: ./docker/lammps
             push: false
             build-args: |
-              LMP_OPTS=${{ matrix.lmp_opts }}
+              LMP_OPTS=${{ matrix.LMP_OPTS }}
         
     build-namd-image:
         runs-on: ubuntu-latest
         strategy:
           matrix:
             arch: [amd64]
-            namd_opts:
-              - ""
-              - "--with-cuda"
+            tag_suffix: ["GPU"]
         # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
         permissions:
           contents: read
@@ -126,12 +113,10 @@ jobs:
             uses: actions/checkout@v4
     
           - name: Convert compiler options to simple tag suffix
-            id: tag_suffix
+            id: NAMD_OPTS
             run: |
-              if [[ "${{ matrix.namd_opts }}" == *"cuda"* ]]; then
-                echo "tag_suffix=GPU" >> $GITHUB_ENV
-              else
-                echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
+              if [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
+                echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
               fi
 
           - name: Build and push Docker image
@@ -140,7 +125,7 @@ jobs:
               context: ./docker/namd
               push: false
               build-args: |
-                NAMD_OPTS=${{ matrix.namd_opts }}
+                NAMD_OPTS=${{ matrix.NAMD_OPTS }}
 
     build-common-image:
         runs-on: ubuntu-latest
@@ -169,16 +154,17 @@ jobs:
             id: option
             run: |
               if [ "${{ matrix.build }}" == "Common-CPU" ]; then
-                echo 'NAMD_OPTS=' >> $GITHUB_ENV
-                echo 'GMX_OPTS=' >> $GITHUB_ENV
-                echo 'LMP_OPTS=' >> $GITHUB_ENV
+                echo NAMD_OPTS= >> $GITHUB_ENV
+                echo GMX_OPTS= >> $GITHUB_ENV
+                echo LMP_OPTS= >> $GITHUB_ENV
+                echo RT_IMG="centos:7" >> $GITHUB_ENV
               else
-                echo 'NAMD_OPTS=--with-cuda' >> $GITHUB_ENV
-                echo 'GMX_OPTS=-DGMX_GPU=CUDA' >> $GITHUB_ENV
-                echo 'LMP_OPTS=-D PKG_GPU=on -D GPU_API=cuda' >> $GITHUB_ENV
+                echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
+                echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
+                echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
+                echo RT_IMG="nvidia/cuda:11.8.0-runtime-centos7" >> $GITHUB_ENV
               fi
 
-    
           - name: Build and push Docker image
             uses: docker/build-push-action@v5
             with:
@@ -188,3 +174,4 @@ jobs:
                 NAMD_OPTS=${{ env.NAMD_OPTS }}
                 GMX_OPTS=${{ env.GMX_OPTS }}
                 LMP_OPTS=${{ env.LMP_OPTS }}
+                RT_IMG=${{ env.RT_IMG}}
