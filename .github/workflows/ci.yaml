@@ -172,10 +172,12 @@ jobs:
                 echo 'NAMD_OPTS=' >> $GITHUB_ENV
                 echo 'GMX_OPTS=' >> $GITHUB_ENV
                 echo 'LMP_OPTS=' >> $GITHUB_ENV
+                echo 'RT_IMG=centos:7' >> $GITHUB_ENV
               else
                 echo 'NAMD_OPTS=--with-cuda' >> $GITHUB_ENV
                 echo 'GMX_OPTS=-DGMX_GPU=CUDA' >> $GITHUB_ENV
                 echo 'LMP_OPTS=-D PKG_GPU=on -D GPU_API=cuda' >> $GITHUB_ENV
+                echo 'RT_IMG=nvidia/cuda:11.8.0-runtime-centos7' >> $GITHUB_ENV
               fi
 
     
@@ -188,3 +190,4 @@ jobs:
                 NAMD_OPTS=${{ env.NAMD_OPTS }}
                 GMX_OPTS=${{ env.GMX_OPTS }}
                 LMP_OPTS=${{ env.LMP_OPTS }}
+                RT_IMG=${{ env.RT_IMG}}
