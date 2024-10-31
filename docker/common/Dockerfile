@@ -1,4 +1,4 @@
-ARG RT_IMAGE=nvidia/cuda:11.8.0-runtime-centos7
+ARG RT_IMAGE
 # based on conda-forge linux image
 FROM condaforge/linux-anvil-cuda:11.8 AS build
 
