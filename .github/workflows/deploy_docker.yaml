@@ -165,7 +165,7 @@ jobs:
       - name: Convert compiler options to simple tag suffix
         id: tag_suffix
         run: |
-          if [[ "${{ matrix.tag_suffix }}" == "GPU"]]; then
+          if [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
             echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
           fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.

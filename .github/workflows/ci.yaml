@@ -115,7 +115,7 @@ jobs:
           - name: Convert compiler options to simple tag suffix
             id: NAMD_OPTS
             run: |
-              if [[ "${{ matrix.tag_suffix }}" == "GPU"]]; then
+              if [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
                 echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
               fi
 
