@@ -4,7 +4,7 @@ FROM condaforge/linux-anvil-cuda:11.8 AS build
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
 ARG NAMD_OPTS=""
-ARG RT_IMAGE=""
+ARG RT_IMAGE=nvidia/cuda:11.8.0-runtime-centos7
 
 COPY . .
 RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
@@ -17,7 +17,7 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
 # CUDA toolkit is massive, so use a smaller image for the runtime
-FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
+FROM ${RT_IMAGE} AS runtime
 
 COPY . .
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
