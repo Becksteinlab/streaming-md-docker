@@ -17,7 +17,7 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
 # CUDA toolkit is massive, so use a smaller image for the runtime
-FROM ${RT_IMAGE} AS runtime
+FROM nvidia/cuda:11.8.0-runtime-centos7 AS runtime
 
 COPY . .
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
