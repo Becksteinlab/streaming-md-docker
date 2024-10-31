@@ -19,7 +19,6 @@ jobs:
       matrix:
         arch: [amd64]
         gmx_opts:
-          - ""
           - "-DGMX_GPU=CUDA"
           - "-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON"
           - "-DGMX_GPU=CUDA -DGMX_MPI=ON"
@@ -27,7 +26,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # 
     steps:
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
@@ -57,8 +55,6 @@ jobs:
             echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
           elif [[  "${{ matrix.gmx_opts }}" == *"GPU"* ]]; then
             echo "tag_suffix=GPU" >> $GITHUB_ENV
-          else
-            echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
           fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
@@ -85,7 +81,6 @@ jobs:
       matrix:
         arch: [amd64]
         lmp_opts:
-          - ""
           - "-D PKG_GPU=on -D GPU_API=cuda"
           - "-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes"
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
@@ -120,8 +115,6 @@ jobs:
             echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
           elif [[ "${{ matrix.lmp_opts }}" == *"GPU"* ]]; then
             echo "tag_suffix=GPU" >> $GITHUB_ENV
-          else
-            echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
           fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
@@ -148,7 +141,6 @@ jobs:
       matrix:
         arch: [amd64]
         namd_opts:
-          - ""
           - "--with-cuda"
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -180,8 +172,6 @@ jobs:
         run: |
           if [[ "${{ matrix.namd_opts }}" == *"cuda"* ]]; then
             echo "tag_suffix=GPU" >> $GITHUB_ENV
-          else
-            echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
           fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker

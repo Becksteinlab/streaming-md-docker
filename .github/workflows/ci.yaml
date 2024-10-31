@@ -14,7 +14,6 @@ jobs:
           matrix:
             arch: [amd64]
             gmx_opts:
-              - ""
               - "-DGMX_GPU=CUDA"
               - "-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON"
               - "-DGMX_GPU=CUDA -DGMX_MPI=ON"
@@ -43,8 +42,6 @@ jobs:
                 echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
               elif [[  "${{ matrix.gmx_opts }}" == *"GPU"* ]]; then
                 echo "tag_suffix=GPU" >> $GITHUB_ENV
-              else
-                echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
               fi
 
           - name: Build and push Docker image
@@ -61,7 +58,6 @@ jobs:
         matrix:
           arch: [amd64]
           lmp_opts:
-            - ""
             - "-D PKG_GPU=on -D GPU_API=cuda"
             - "-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes"
       # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
@@ -88,8 +84,6 @@ jobs:
               echo "tag_suffix=GPU-Node-MPI" >> $GITHUB_ENV
             elif [[ "${{ matrix.lmp_opts }}" == *"GPU"* ]]; then
               echo "tag_suffix=GPU" >> $GITHUB_ENV
-            else
-              echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
             fi
 
         - name: Build and push Docker image
@@ -106,7 +100,6 @@ jobs:
           matrix:
             arch: [amd64]
             namd_opts:
-              - ""
               - "--with-cuda"
         # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
         permissions:
@@ -130,8 +123,6 @@ jobs:
             run: |
               if [[ "${{ matrix.namd_opts }}" == *"cuda"* ]]; then
                 echo "tag_suffix=GPU" >> $GITHUB_ENV
-              else
-                echo "tag_suffix=Single-Core-CPU" >> $GITHUB_ENV
               fi
 
           - name: Build and push Docker image
