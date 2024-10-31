@@ -1,10 +1,10 @@
+ARG RT_IMAGE=nvidia/cuda:11.8.0-runtime-centos7
 # based on conda-forge linux image
 FROM condaforge/linux-anvil-cuda:11.8 AS build
 
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
 ARG NAMD_OPTS=""
-ARG RT_IMAGE=nvidia/cuda:11.8.0-runtime-centos7
 
 COPY . .
 RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
