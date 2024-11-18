@@ -3,13 +3,11 @@ FROM condaforge/linux-anvil-cuda:11.8 AS build
 
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
-ARG NAMD_OPTS=""
 
 COPY . .
 RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
 RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS"
 RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_gromacs.sh "$GMX_OPTS"
-RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_namd.sh "$NAMD_OPTS"
 
 # Delete the heavy environment but keep conda binaries
 RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
@@ -33,9 +31,6 @@ RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
 
 COPY --from=build /opt/lammps_build /opt/lammps_build
 RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
-
-COPY --from=build /opt/namd-build /opt/namd-build
-RUN ln -s /opt/namd-build/namd3  /bin/namd3
 
 ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
 CMD [ "/bin/bash" ]

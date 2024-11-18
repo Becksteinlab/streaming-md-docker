@@ -89,44 +89,6 @@ jobs:
             build-args: |
               LMP_OPTS=${{ matrix.LMP_OPTS }}
         
-    build-namd-image:
-        runs-on: ubuntu-latest
-        strategy:
-          matrix:
-            arch: [amd64]
-            tag_suffix: ["GPU"]
-        # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-        permissions:
-          contents: read
-
-        steps:
-          - name: Free disk space
-            uses: jlumbroso/free-disk-space@main
-            with:
-              android: true
-              dotnet: true
-              haskell: true
-              large-packages: true
-              swap-storage: true
-
-          - name: Checkout repository
-            uses: actions/checkout@v4
-    
-          - name: Convert compiler options to simple tag suffix
-            id: NAMD_OPTS
-            run: |
-              if [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
-                echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
-              fi
-
-          - name: Build and push Docker image
-            uses: docker/build-push-action@v5
-            with:
-              context: ./docker/namd
-              push: false
-              build-args: |
-                NAMD_OPTS=${{ matrix.NAMD_OPTS }}
-
     build-common-image:
         runs-on: ubuntu-latest
         strategy:
@@ -154,12 +116,10 @@ jobs:
             id: option
             run: |
               if [ "${{ matrix.build }}" == "Common-CPU" ]; then
-                echo NAMD_OPTS= >> $GITHUB_ENV
                 echo GMX_OPTS= >> $GITHUB_ENV
                 echo LMP_OPTS= >> $GITHUB_ENV
                 echo DOCKERFILE="Dockerfile.cpu" >> $GITHUB_ENV
               else
-                echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
                 echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
                 echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
                 echo DOCKERFILE="Dockerfile.gpu" >> $GITHUB_ENV
@@ -172,6 +132,5 @@ jobs:
               push: false
               file: ./docker/common/${{ env.DOCKERFILE }}
               build-args: |
-                NAMD_OPTS=${{ env.NAMD_OPTS }}
                 GMX_OPTS=${{ env.GMX_OPTS }}
                 LMP_OPTS=${{ env.LMP_OPTS }}
