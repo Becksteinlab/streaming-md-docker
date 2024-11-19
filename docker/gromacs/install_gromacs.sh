@@ -7,8 +7,8 @@ ldd $(which ls) | grep libattr
 
 export HOME_DIR=${PWD}
 export NPROC=$(nproc)
-export LIBRARY_PATH=$LIBRARY_PATH:${CONDA_PREFIX}/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
+export LIBRARY_PATH=${CONDA_PREFIX}/lib
+export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib
 
 ldd $(which ls) | grep libacl
 ldd $(which ls) | grep libattr
