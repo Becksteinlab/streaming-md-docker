@@ -1,6 +1,7 @@
 # Containers for IMD streaming
 
 The following builds a container containing LAMMPS and GROMACS ready for use with the IMD v3 streaming interface.
+(We also have a version of NAMD with IMDv3 streaming but NAMD's license does not allow us to include it here.)
 
 # Building
 
