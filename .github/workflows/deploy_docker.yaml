@@ -67,7 +67,7 @@ jobs:
         with:
           context: ./docker/gromacs
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-GROMACS-${{ env.tag_suffix }}
+          tags: "${{ steps.meta.outputs.tags }}-GROMACS-${{ matrix.tag_suffix }}"
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GMX_OPTS=${{ env.GMX_OPTS }}
@@ -126,7 +126,7 @@ jobs:
         with:
           context: ./docker/lammps
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-LAMMPS-${{ env.tag_suffix }}
+          tags: "${{ steps.meta.outputs.tags }}-LAMMPS-${{ matrix.tag_suffix }}"
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             LMP_OPTS=${{ env.LMP_OPTS }}

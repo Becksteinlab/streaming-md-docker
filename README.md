@@ -1,6 +1,6 @@
 # Containers for IMD streaming
 
-The following builds a container containing LAMMPS, GROMACS and NAMD ready for use with the IMD v3 streaming interface.
+The following builds a container containing LAMMPS and GROMACS ready for use with the IMD v3 streaming interface.
 
 # Building
 
@@ -12,7 +12,6 @@ Compiler arguments for MPI and GPU acceleration can be passed through
 the following build arguments as follows:
 ```bash
 docker buildx build -t streaming_md_docker_local \
-    --build-arg NAMD_OPTS="--with-cuda" \
     --build-arg GMX_OPTS="-DGMX_GPU=CUDA" \
     --build-arg LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" common
 ```
