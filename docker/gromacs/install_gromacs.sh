@@ -2,16 +2,11 @@
 export PATH="${PATH}:${CUDA_HOME}/bin"
 cd /opt/
 
-ldd $(which ls) | grep libacl
-ldd $(which ls) | grep libattr
-
 export HOME_DIR=${PWD}
 export NPROC=$(nproc)
 export LIBRARY_PATH=${CONDA_PREFIX}/lib
 export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib
 
-ldd $(which ls) | grep libacl
-ldd $(which ls) | grep libattr
 
 git clone https://github.com/hcho38/gromacs.git
 cd gromacs
