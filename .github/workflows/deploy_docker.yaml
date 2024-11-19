@@ -130,62 +130,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             LMP_OPTS=${{ env.LMP_OPTS }}
-    
-  build-and-push-namd-image:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64]
-        tag_suffix: ["GPU"]
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-    permissions:
-      contents: read
-      packages: write
-      # 
-    steps:
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Convert compiler options to simple tag suffix
-        id: tag_suffix
-        run: |
-          if [[ "${{ matrix.tag_suffix }}" == "GPU" ]]; then
-            echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
-          fi
-      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
-      # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
-      # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./docker/namd
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}-NAMD-${{ env.tag_suffix }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            NAMD_OPTS=${{ env.NAMD_OPTS }}
 
   build-common-image:
     runs-on: ubuntu-latest
@@ -222,12 +166,10 @@ jobs:
         id: option
         run: |
           if [ "${{ matrix.build }}" == "Common-CPU" ]; then
-            echo NAMD_OPTS= >> $GITHUB_ENV
             echo GMX_OPTS= >> $GITHUB_ENV
             echo LMP_OPTS= >> $GITHUB_ENV
             echo DOCKERFILE="Dockerfile.cpu" >> $GITHUB_ENV
           else
-            echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
             echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
             echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
             echo DOCKERFILE="Dockerfile.gpu" >> $GITHUB_ENV
@@ -248,6 +190,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            NAMD_OPTS=${{ env.NAMD_OPTS }}
             GMX_OPTS=${{ env.GMX_OPTS }}
             LMP_OPTS=${{ env.LMP_OPTS }}

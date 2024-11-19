@@ -1,10 +1,12 @@
 #!/bin/bash
 export PATH="${PATH}:${CUDA_HOME}/bin"
 cd /opt/
+
 export HOME_DIR=${PWD}
 export NPROC=$(nproc)
 export LIBRARY_PATH=${CONDA_PREFIX}/lib
 export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib
+
 
 git clone https://github.com/hcho38/gromacs.git
 cd gromacs
