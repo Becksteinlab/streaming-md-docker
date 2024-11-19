@@ -32,12 +32,12 @@ docker run -it streaming_md_docker_local
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
 
 ```bash
-docker pull ghcr.io/Becksteinlab/streaming-md-docker:main-Common-GPU
+docker pull ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```
 
 You can then run the container using:
 ```
-docker run -it  ghcr.io/Becksteinlab/streaming-md-docker:main-Common-GPU
+docker run -it  ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```
 
 # Using a GPU
@@ -45,5 +45,5 @@ docker run -it  ghcr.io/Becksteinlab/streaming-md-docker:main-Common-GPU
 To run with a GPU exposed to your docker container, install the [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) and use the following
 
 ```bash
-docker run -it --runtime=nvidia --gpus=all  ghcr.io/Becksteinlab/streaming-md-docker:main-Common-GPU
+docker run -it --runtime=nvidia --gpus=all  ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
 ```
