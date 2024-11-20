@@ -8,7 +8,7 @@ export NPROC=$(nproc)
 # Setup LAMMPS
 git clone https://github.com/ljwoods2/lammps.git
 cd lammps
-git checkout imd-v3
+git checkout imd-v3-integration
 mkdir build
 cd build
 cmake ../cmake/  $(echo ${1} | sed 's/"//g') -D PKG_MISC=yes -D PKG_H5MD=yes -DCMAKE_INSTALL_PREFIX=/opt/lammps_build
