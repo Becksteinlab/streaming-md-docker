@@ -6,7 +6,7 @@ export NPROC=$(nproc)
 export LIBRARY_PATH=${CONDA_PREFIX}/lib
 export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib
 
-git clone https://github.com/hcho38/gromacs.git
+git clone https://gitlab.com/ljwoods2/gromacs.git
 cd gromacs
 git checkout imd-v3
 mkdir build
