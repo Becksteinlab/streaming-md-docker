@@ -70,7 +70,7 @@ jobs:
           tags: "${{ steps.meta.outputs.tags }}-GROMACS-${{ matrix.build }}"
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            GMX_OPTS="${{ env.GMX_OPTS }}"
+            GMX_OPTS='"${{ env.GMX_OPTS }}"'
 
   build-and-push-lammps-image:
     runs-on: ubuntu-latest
@@ -129,7 +129,7 @@ jobs:
           tags: "${{ steps.meta.outputs.tags }}-LAMMPS-${{ matrix.build }}"
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            LMP_OPTS="${{ env.LMP_OPTS }}"
+            LMP_OPTS='"${{ env.LMP_OPTS }}"'
 
   build-common-image:
     runs-on: ubuntu-latest
@@ -190,5 +190,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            GMX_OPTS="${{ env.GMX_OPTS }}"
-            LMP_OPTS="${{ env.LMP_OPTS }}"
+            GMX_OPTS='"${{ env.GMX_OPTS }}"'
+            LMP_OPTS='"${{ env.LMP_OPTS }}"'
