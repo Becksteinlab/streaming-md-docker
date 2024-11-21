@@ -47,7 +47,7 @@ jobs:
               context: ./docker/gromacs
               push: false
               build-args: 
-                GMX_OPTS='"${{ env.GMX_OPTS }}"'
+                GMX_OPTS="${{ env.GMX_OPTS }}"
 
     build-lammps-image:
       runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
             context: ./docker/lammps
             push: false
             build-args: |
-              LMP_OPTS='"${{ env.LMP_OPTS }}"'
+              LMP_OPTS="${{ env.LMP_OPTS }}"
         
     build-common-image:
         runs-on: ubuntu-latest
@@ -132,5 +132,5 @@ jobs:
               push: false
               file: ./docker/common/${{ env.DOCKERFILE }}
               build-args: |
-                GMX_OPTS='"${{ env.GMX_OPTS }}"'
-                LMP_OPTS='"${{ env.LMP_OPTS }}"'
+                GMX_OPTS="${{ env.GMX_OPTS }}"
+                LMP_OPTS="${{ env.LMP_OPTS }}"
