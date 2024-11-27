@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -exo pipefail
+
+if [[ "${DISTRO_NAME}${DISTRO_VER}" == "centos7" ]]; then
+  # Disable outdated repos; use vault instead
+  sed -i '/^enabled=/d; /^\[/a\enabled=0' /etc/yum.repos.d/CentOS-Base.repo
+  cp "/tmp/rpm-repos/centos7-$(uname -m)-vault.repo" /etc/yum.repos.d/vault.repo
+
+  # Resolves a nasty NOKEY warning that appears when using yum.
+  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+  if [[ "$(uname -m)" == "ppc64le" ]]; then
+    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-7-ppc64le
+  elif [[ "$(uname -m)" == "aarch64" ]]; then
+    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7-aarch64
+  fi
+elif [ "${DISTRO_NAME}${DISTRO_VER}" = "ubi8" ]; then
+  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+elif [ "${DISTRO_NAME}${DISTRO_VER}" = "almalinux8" ]; then
+  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+elif [ "${DISTRO_NAME}${DISTRO_VER}" = "almalinux9" ]; then
+  # alma9 removed SHA1 availability by default, but it's still needed for the
+  # RPM key; re-enable it. Details: https://access.redhat.com/articles/3666211
+  update-crypto-policies --set LEGACY
+  rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
+fi
+
+rm -rf "/tmp/rpm-repos"
