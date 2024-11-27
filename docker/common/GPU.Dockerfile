@@ -39,6 +39,7 @@ RUN ldconfig -v 2>/dev/null | grep -v ^$'\t' | cut -f1 -d":" >> /etc/ld.so.conf.
 # Add the archived repo URL and fix RPM imports
 ADD rpm-repos /tmp/rpm-repos
 ADD fix_rpm /opt/docker/bin/fix_rpm
+RUN chmod +x /opt/docker/bin/fix_rpm
 RUN /opt/docker/bin/fix_rpm
 
 # Add custom `yum_clean_all` script before using `yum`
