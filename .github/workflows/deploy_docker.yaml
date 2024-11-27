@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         arch: [amd64]
-        build: ["Common-CPU, "Common-GPU"]
+        build: ["Common-CPU", "Common-GPU"]
 
     permissions:
       contents: read
