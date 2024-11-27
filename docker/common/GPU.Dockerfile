@@ -1,20 +1,15 @@
-# based on conda-forge linux image
 # Set environment variables during runtime.
 ARG CUDA_VER
 ARG DISTRO_ARCH
-ARG DISTRO_NAME
 ARG DISTRO_VER
-FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-${DISTRO_NAME}${DISTRO_VER}
-
-LABEL maintainer="conda-forge <conda-forge@googlegroups.com>"
+FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-ubi${DISTRO_VER} as conda
 
 # Set `ARG`s during runtime.
 ARG CUDA_VER
 ARG DISTRO_ARCH
-ARG DISTRO_NAME
 ARG DISTRO_VER
 ENV CUDA_VER=${CUDA_VER} \
-    DISTRO_ARCH=${DISTRO_ARCH} \
+    DISTRO_ARCH=ubi \
     DISTRO_NAME=${DISTRO_NAME} \
     DISTRO_VER=${DISTRO_VER}
 
@@ -43,11 +38,11 @@ RUN ldconfig -v 2>/dev/null | grep -v ^$'\t' | cut -f1 -d":" >> /etc/ld.so.conf.
 
 # Add the archived repo URL and fix RPM imports
 ADD rpm-repos /tmp/rpm-repos
-ADD scripts/fix_rpm /opt/docker/bin/fix_rpm
+ADD fix_rpm /opt/docker/bin/fix_rpm
 RUN /opt/docker/bin/fix_rpm
 
 # Add custom `yum_clean_all` script before using `yum`
-COPY scripts/yum_clean_all /opt/docker/bin/
+COPY yum_clean_all /opt/docker/bin/
 
 # Install basic requirements.
 RUN yum update -y --disablerepo=cuda && \
@@ -61,18 +56,16 @@ RUN yum update -y --disablerepo=cuda && \
 
 # Fix locale in UBI 8 images
 # See https://github.com/CentOS/sig-cloud-instance-images/issues/154
-RUN if [ "${DISTRO_NAME}${DISTRO_VER}" = "ubi8" ]; then \
-        yum install -y \
-            glibc-langpack-en \
-        && \
-        /opt/docker/bin/yum_clean_all; \
-    fi
+RUN yum install -y \
+        glibc-langpack-en \
+    && \
+    /opt/docker/bin/yum_clean_all; 
 
 # Remove preinclude system compilers
 RUN rpm -e --nodeps --verbose gcc gcc-c++
 
 # Run common commands
-COPY scripts/run_commands /opt/docker/bin/run_commands
+COPY run_commands /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
 # Download and cache CUDA related packages.
@@ -88,8 +81,20 @@ RUN source /opt/conda/etc/profile.d/conda.sh && \
 # Add a file for users to source to activate the `conda`
 # environment `base`. Also add a file that wraps that for
 # use with the `ENTRYPOINT`.
-COPY linux-anvil-cuda/entrypoint_source /opt/docker/bin/entrypoint_source
-COPY scripts/entrypoint /opt/docker/bin/entrypoint
+COPY entrypoint_source /opt/docker/bin/entrypoint_source
+COPY entrypoint /opt/docker/bin/entrypoint
+
+# Ensure that all containers start with tini and the user selected process.
+# Activate the `conda` environment `base`.
+# Provide a default command (`bash`), which will start if the user doesn't specify one.
+ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
+CMD [ "/bin/bash" ]
+
+FROM conda AS build
+
+ARG CUDA_VER
+ARG DISTRO_ARCH
+ARG DISTRO_VER
 
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
@@ -104,7 +109,7 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
 # CUDA toolkit is massive, so use a smaller image for the runtime
-FROM nvidia/cuda:11.8.0-runtime-centos7
+FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-runtime-ubi${DISTRO_VER}
 
 COPY . .
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
@@ -121,6 +126,3 @@ RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
 
 COPY --from=build /opt/lammps_build /opt/lammps_build
 RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
-
-ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
-CMD [ "/bin/bash" ]

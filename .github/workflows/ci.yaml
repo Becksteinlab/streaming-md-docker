@@ -8,93 +8,12 @@ on:
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
-    build-gromacs-image:
-        runs-on: ubuntu-latest
-        strategy:
-          matrix:
-            arch: [amd64]
-            build: [GPU, GPU-Thread-MPI, GPU-Node-MPI]
-        # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-        permissions:
-          contents: read
-        steps:
-          - name: Free disk space
-            uses: jlumbroso/free-disk-space@main
-            with:
-              android: true
-              dotnet: true
-              haskell: true
-              large-packages: true
-              swap-storage: true
-          
-          - name: Checkout repository
-            uses: actions/checkout@v4
-
-          - name: Convert compiler options to simple tag suffix
-            id: option
-            run: |
-              if [ "${{ matrix.build }}" == "GPU-Thread-MPI" ]; then
-                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_THREAD_MPI=ON" >> $GITHUB_ENV
-              elif [ "${{ matrix.build }}" == "GPU-Node-MPI" ]; then
-                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_MPI=ON"  >> $GITHUB_ENV
-              elif [  "${{ matrix.build }}" == "GPU" ]; then
-                echo GMX_OPTS="-DGMX_GPU=CUDA -DGMX_MPI=OFF" >> $GITHUB_ENV
-              fi
-
-          - name: Build and push Docker image
-            uses: docker/build-push-action@v5
-            with:
-              context: ./docker/gromacs
-              push: false
-              build-args: 
-                GMX_OPTS="${{ env.GMX_OPTS }}"
-
-    build-lammps-image:
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          arch: [amd64]
-          build: ["GPU-Node-MPI", "GPU"]
-      # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-      permissions:
-        contents: read
-        
-      steps:
-        - name: Free disk space
-          uses: jlumbroso/free-disk-space@main
-          with:
-            android: true
-            dotnet: true
-            haskell: true
-            large-packages: true
-            swap-storage: true
-          
-        - name: Checkout repository
-          uses: actions/checkout@v4
-  
-        - name: Convert compiler options to simple tag suffix
-          id: option
-          run: |
-            if [ "${{ matrix.build }}" == "GPU-Node-MPI" ]; then
-              echo LMP_OPTS="-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MPI=yes" >> $GITHUB_ENV
-            elif [ "${{ matrix.build }}" == "GPU" ]; then
-              echo LMP_OPTS="-D PKG_GPU=on -D GPU_API=cuda -D BUILD_MI=no" >> $GITHUB_ENV
-            fi
-
-        - name: Build and push Docker image
-          uses: docker/build-push-action@v5
-          with:
-            context: ./docker/lammps
-            push: false
-            build-args: |
-              LMP_OPTS="${{ env.LMP_OPTS }}"
-        
     build-common-image:
         runs-on: ubuntu-latest
         strategy:
           matrix:
             arch: [amd64]
-            build: ["Common-CPU"] #, "Common-GPU"]
+            build: ["Common-CPU, "Common-GPU"]
 
         permissions:
           contents: read
@@ -118,11 +37,11 @@ jobs:
               if [ "${{ matrix.build }}" == "Common-CPU" ]; then
                 echo GMX_OPTS= >> $GITHUB_ENV
                 echo LMP_OPTS= >> $GITHUB_ENV
-                echo DOCKERFILE="Dockerfile.cpu" >> $GITHUB_ENV
+                echo DOCKERFILE="CPU.Dockerfile" >> $GITHUB_ENV
               else
                 echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
                 echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
-                echo DOCKERFILE="Dockerfile.gpu" >> $GITHUB_ENV
+                echo DOCKERFILE="GPU.Dockerfile" >> $GITHUB_ENV
               fi
 
           - name: Build and push Docker image
@@ -134,3 +53,6 @@ jobs:
               build-args: |
                 GMX_OPTS="${{ env.GMX_OPTS }}"
                 LMP_OPTS="${{ env.LMP_OPTS }}"
+                CUDA_VER=12.6.2
+                DISTRO_ARCH=${{ matrix.arch }}
+                DISTRO_VER=8
