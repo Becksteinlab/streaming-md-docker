@@ -92,10 +92,6 @@ CMD [ "/bin/bash" ]
 
 FROM conda AS build
 
-ARG CUDA_VER
-ARG DISTRO_ARCH
-ARG DISTRO_VER
-
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
 
@@ -108,8 +104,11 @@ RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install
 RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
 RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
+ARG CUDA_VER
+ARG DISTRO_ARCH
+ARG DISTRO_VER
 # CUDA toolkit is massive, so use a smaller image for the runtime
-FROM --platform=linux/${DISTRO_ARCH} ubuntu:{DISTRO_VER}
+FROM --platform=linux/${DISTRO_ARCH} ubuntu:${DISTRO_VER}
 
 COPY . .
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
