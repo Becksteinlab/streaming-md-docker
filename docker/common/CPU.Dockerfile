@@ -2,14 +2,16 @@
 ARG CUDA_VER
 ARG DISTRO_ARCH
 ARG DISTRO_VER
-FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-ubuntu${DISTRO_VER} as conda
+ARG DISTRO_NAME
+FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-${DISTRO_NAME}${DISTRO_VER} as conda
 
 # Set `ARG`s during runtime.
 ARG CUDA_VER
 ARG DISTRO_ARCH
 ARG DISTRO_VER
+ARG DISTRO_NAME
 ENV CUDA_VER=${CUDA_VER} \
-    DISTRO_ARCH=ubi \
+    DISTRO_ARCH=${DISTRO_ARCH} \
     DISTRO_NAME=${DISTRO_NAME} \
     DISTRO_VER=${DISTRO_VER}
 
@@ -108,8 +110,9 @@ RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 ARG CUDA_VER
 ARG DISTRO_ARCH
 ARG DISTRO_VER
+ARG DISTRO_NAME
 # CUDA toolkit is massive, so use a smaller image for the runtime
-FROM --platform=linux/${DISTRO_ARCH} ubuntu:${DISTRO_VER}
+FROM --platform=linux/${DISTRO_ARCH} ${DISTRO_NAME}:${DISTRO_VER}
 
 COPY . .
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
