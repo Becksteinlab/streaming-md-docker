@@ -44,6 +44,7 @@ RUN /opt/docker/bin/fix_rpm
 
 # Add custom `yum_clean_all` script before using `yum`
 COPY yum_clean_all /opt/docker/bin/
+RUN chmod +x /opt/docker/bin/yum_clean_all
 
 # Install basic requirements.
 RUN yum update -y --disablerepo=cuda && \
@@ -67,6 +68,7 @@ RUN rpm -e --nodeps --verbose gcc gcc-c++
 
 # Run common commands
 COPY run_commands /opt/docker/bin/run_commands
+RUN chmod +x /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
 # Download and cache CUDA related packages.
@@ -83,7 +85,9 @@ RUN source /opt/conda/etc/profile.d/conda.sh && \
 # environment `base`. Also add a file that wraps that for
 # use with the `ENTRYPOINT`.
 COPY entrypoint_source /opt/docker/bin/entrypoint_source
+RUN chmod +x /opt/docker/bin/entrypoint_source
 COPY entrypoint /opt/docker/bin/entrypoint
+RUN chmod +x /opt/docker/bin/entrypoint
 
 # Ensure that all containers start with tini and the user selected process.
 # Activate the `conda` environment `base`.
