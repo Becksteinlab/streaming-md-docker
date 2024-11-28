@@ -45,13 +45,14 @@ RUN ldconfig -v 2>/dev/null | grep -v ^$'\t' | cut -f1 -d":" >> /etc/ld.so.conf.
 # RUN /opt/docker/bin/fix_rpm
 
 # Install basic requirements.
+# NOTE: this fixes the cuda version.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bzip2 \
         sudo \
         tar \
         curl \
-        cuda-compiler-${CUDA_VER} \
+        cuda-compiler-12-6 \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
