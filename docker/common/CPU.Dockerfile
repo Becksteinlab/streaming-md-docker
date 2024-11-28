@@ -55,13 +55,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Fix locale in UBI 8 images
-# See https://github.com/CentOS/sig-cloud-instance-images/issues/154
-# RUN yum install -y \
-#         glibc-langpack-en \
-#     && \
-#     /opt/docker/bin/yum_clean_all; 
-
 # Remove preinclude system compilers
 RUN apt-get remove -y --purge gcc g++
 
