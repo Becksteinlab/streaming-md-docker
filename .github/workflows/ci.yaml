@@ -57,3 +57,4 @@ jobs:
                 DISTRO_ARCH=${{ matrix.arch }}
                 DISTRO_VER=8
                 DISTRO_VER=22.04
+                DISTRO_NAME=ubuntu
