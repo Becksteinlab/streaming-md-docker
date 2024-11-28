@@ -4,8 +4,8 @@ cd /opt/
 export HOME_DIR=${PWD}
 export CPATH=${CONDA_PREFIX}/include
 export NPROC=$(nproc)
-export LIBRARY_PATH=${CONDA_PREFIX}/lib
-export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib
+export LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
+export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
 
 # Setup LAMMPS
 git clone https://github.com/ljwoods2/lammps.git
@@ -13,6 +13,12 @@ cd lammps
 git checkout imd-v3-integration
 mkdir build
 cd build
-cmake ../cmake/  $(echo ${1} | sed 's/"//g') -D PKG_MISC=yes -D PKG_H5MD=yes -DCMAKE_INSTALL_PREFIX=/opt/lammps_build -DCMAKE_CXX_FLAGS="-L${CONDA_PREFIX}/lib -I${CONDA_PREFIX}/include"
+cmake ../cmake/ \
+     $(echo ${1} | sed 's/"//g') \
+    -D PKG_MISC=yes \
+    -D PKG_H5MD=yes \
+    -DCMAKE_INSTALL_PREFIX=/opt/lammps_build \
+    -DCMAKE_LIBRARY_PATH="/usr/local/cuda/lib64;${CONDA_PREFIX}/lib" \
+    -DCMAKE_INCLUDE_PATH="/usr/local/cuda/include;${CONDA_PREFIX}/include"
 cmake --build . -j ${NPROC}
 make install

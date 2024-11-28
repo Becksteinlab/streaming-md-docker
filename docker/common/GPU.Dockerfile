@@ -51,6 +51,7 @@ RUN apt-get update && \
         sudo \
         tar \
         curl \
+        cuda-compiler-${CUDA_VER} \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
