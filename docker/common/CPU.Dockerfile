@@ -107,6 +107,11 @@ ARG DISTRO_NAME
 FROM --platform=linux/${DISTRO_ARCH} ${DISTRO_NAME}:${DISTRO_VER}
 
 COPY . .
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        curl 
+
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
