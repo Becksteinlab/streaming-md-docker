@@ -74,9 +74,7 @@ RUN /opt/docker/bin/run_commands
 # Download and cache CUDA related packages.
 RUN source /opt/conda/etc/profile.d/conda.sh && \
     conda activate && \
-    conda create -n test --yes --quiet --download-only \
-        conda-forge::cudatoolkit=${CUDA_VER} \
-        && \
+    conda create -n test --yes --quiet --download-only && \
     conda clean -tiy && \
     chgrp -R lucky /opt/conda && \
     chmod -R g=u /opt/conda
