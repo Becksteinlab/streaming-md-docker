@@ -106,11 +106,17 @@ ARG DISTRO_NAME
 # CUDA toolkit is massive, so use a smaller image for the runtime
 FROM --platform=linux/${DISTRO_ARCH} ${DISTRO_NAME}:${DISTRO_VER}
 
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+
 COPY . .
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        curl 
+        curl \
+        ca-certificates
+
+RUN update-ca-certificates
 
 COPY --from=build /opt/docker/bin/run_commands /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
