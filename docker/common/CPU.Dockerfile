@@ -50,7 +50,6 @@ RUN apt-get update && \
         bzip2 \
         sudo \
         tar \
-        which \
         curl \
     && \
     apt-get clean && \
