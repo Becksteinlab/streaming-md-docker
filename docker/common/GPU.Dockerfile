@@ -2,7 +2,7 @@
 ARG CUDA_VER
 ARG DISTRO_ARCH
 ARG DISTRO_VER
-FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-ubi${DISTRO_VER} as conda
+FROM --platform=linux/${DISTRO_ARCH} nvidia/cuda:${CUDA_VER}-devel-ubuntu${DISTRO_VER} as conda
 
 # Set `ARG`s during runtime.
 ARG CUDA_VER
@@ -37,34 +37,32 @@ RUN ldconfig -v 2>/dev/null | grep -v ^$'\t' | cut -f1 -d":" >> /etc/ld.so.conf.
     ldconfig
 
 # Add the archived repo URL and fix RPM imports
-ADD rpm-repos /tmp/rpm-repos
-ADD fix_rpm /opt/docker/bin/fix_rpm
-RUN chmod +x /opt/docker/bin/fix_rpm
-RUN /opt/docker/bin/fix_rpm
-
-# Add custom `yum_clean_all` script before using `yum`
-COPY yum_clean_all /opt/docker/bin/
-RUN chmod +x /opt/docker/bin/yum_clean_all
+# ADD rpm-repos /tmp/rpm-repos
+# ADD fix_rpm /opt/docker/bin/fix_rpm
+# RUN chmod +x /opt/docker/bin/fix_rpm
+# RUN /opt/docker/bin/fix_rpm
 
 # Install basic requirements.
-RUN yum update -y --disablerepo=cuda && \
-    yum install -y \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bzip2 \
         sudo \
         tar \
         which \
+        curl \
     && \
-    /opt/docker/bin/yum_clean_all
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Fix locale in UBI 8 images
 # See https://github.com/CentOS/sig-cloud-instance-images/issues/154
-RUN yum install -y \
-        glibc-langpack-en \
-    && \
-    /opt/docker/bin/yum_clean_all; 
+# RUN yum install -y \
+#         glibc-langpack-en \
+#     && \
+#     /opt/docker/bin/yum_clean_all; 
 
 # Remove preinclude system compilers
-RUN rpm -e --nodeps --verbose gcc gcc-c++
+RUN apt-get remove -y --purge gcc g++
 
 # Run common commands
 COPY run_commands /opt/docker/bin/run_commands

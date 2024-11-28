@@ -76,4 +76,4 @@ jobs:
             LMP_OPTS="${{ env.LMP_OPTS }}"
             CUDA_VER=12.6.2
             DISTRO_ARCH=${{ matrix.arch }}
-            DISTRO_VER=8
+            DISTRO_VER=22.04
