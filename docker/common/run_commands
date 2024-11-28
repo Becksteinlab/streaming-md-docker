@@ -52,7 +52,7 @@ ln -s /opt/conda/condabin/micromamba /opt/conda/bin/micromamba
 export CONDA_NUMBER_CHANNEL_NOTICES="0"
 touch /opt/conda/conda-meta/pinned
 ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
-source /opt/conda/etc/profile.d/conda.sh
+. /opt/conda/etc/profile.d/conda.sh
 conda activate
 conda config --set show_channel_urls True
 conda config --set channel_priority strict

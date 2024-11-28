@@ -64,7 +64,7 @@ RUN chmod +x /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
 # Download and cache CUDA related packages.
-RUN source /opt/conda/etc/profile.d/conda.sh && \
+RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate && \
     conda create -n test --yes --quiet --download-only && \
     conda clean -tiy && \
@@ -91,13 +91,13 @@ ARG LMP_OPTS=""
 ARG GMX_OPTS=""
 
 COPY . .
-RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
-RUN source /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS"
-RUN source /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_gromacs.sh "$GMX_OPTS"
+RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS"
+RUN . /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_gromacs.sh "$GMX_OPTS"
 
 # Delete the heavy environment but keep conda binaries
-RUN source /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
-RUN source /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
+RUN . /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
+RUN . /opt/conda/etc/profile.d/conda.sh && conda clean -a -y
 
 ARG CUDA_VER
 ARG DISTRO_ARCH
@@ -114,7 +114,7 @@ COPY --from=build /opt/docker/bin/entrypoint /opt/docker/bin/entrypoint
 COPY --from=build /opt/docker/bin/entrypoint_source /opt/docker/bin/entrypoint_source
 
 # Create the new lightweight env
-RUN source /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
+RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
 
 COPY --from=build /opt/gromacs_build /opt/gromacs_build
 RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
