@@ -44,6 +44,9 @@ RUN ldconfig -v 2>/dev/null | grep -v ^$'\t' | cut -f1 -d":" >> /etc/ld.so.conf.
 # RUN chmod +x /opt/docker/bin/fix_rpm
 # RUN /opt/docker/bin/fix_rpm
 
+# Remove preinclude system compilers
+RUN apt-get remove -y --purge gcc g++
+
 # Install basic requirements.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -54,9 +57,6 @@ RUN apt-get update && \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# Remove preinclude system compilers
-RUN apt-get remove -y --purge gcc g++
 
 # Run common commands
 COPY run_commands /opt/docker/bin/run_commands
