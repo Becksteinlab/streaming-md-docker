@@ -54,7 +54,7 @@ jobs:
           else
             echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
             echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
-            echo DOCKERFILE="GPU.Dockerfile.gpu" >> $GITHUB_ENV
+            echo DOCKERFILE="GPU.Dockerfile" >> $GITHUB_ENV
           fi
 
       - name: Extract metadata (tags, labels) for Docker
