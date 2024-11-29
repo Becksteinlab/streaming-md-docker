@@ -79,12 +79,6 @@ RUN chmod +x /opt/docker/bin/entrypoint_source
 COPY entrypoint /opt/docker/bin/entrypoint
 RUN chmod +x /opt/docker/bin/entrypoint
 
-# Ensure that all containers start with tini and the user selected process.
-# Activate the `conda` environment `base`.
-# Provide a default command (`bash`), which will start if the user doesn't specify one.
-ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
-CMD [ "/bin/bash" ]
-
 FROM conda AS build
 
 ARG LMP_OPTS=""
@@ -132,3 +126,9 @@ RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
 
 COPY --from=build /opt/lammps_build /opt/lammps_build
 RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
+
+# Ensure that all containers start with tini and the user selected process.
+# Activate the `conda` environment `base`.
+# Provide a default command (`bash`), which will start if the user doesn't specify one.
+ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
+CMD [ "/bin/bash" ]
