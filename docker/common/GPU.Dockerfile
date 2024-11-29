@@ -50,12 +50,13 @@ RUN apt-get remove -y --purge gcc g++
 # Install basic requirements.
 # NOTE: this fixes the cuda version.
 RUN apt-get update && \
+    converted=$(echo "$CUDA_VER" | awk -F. '{print $1 "-" $2}') && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         bzip2 \
         sudo \
         tar \
         curl \
-        cuda-compiler-12-6 \
+        cuda-compiler-${converted} \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

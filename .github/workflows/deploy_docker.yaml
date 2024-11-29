@@ -74,7 +74,7 @@ jobs:
           build-args: |
             GMX_OPTS="${{ env.GMX_OPTS }}"
             LMP_OPTS="${{ env.LMP_OPTS }}"
-            CUDA_VER=12.6.2
+            CUDA_VER=12.4.1
             DISTRO_ARCH=${{ matrix.arch }}
             DISTRO_VER=22.04
             DISTRO_NAME=ubuntu
