@@ -87,7 +87,7 @@ jobs:
           context: ./docker/namd
           file: ./docker/namd/${{ env.DOCKERFILE }}
           push: false
-          tags: main-namd-${{ matrix.build }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NAMD_OPTS="${{ env.NAMD_OPTS }}"
