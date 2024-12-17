@@ -17,7 +17,9 @@ wget https://github.com/charmplusplus/charm/archive/refs/tags/v8.0.0.tar.gz
 tar xf v8.0.0.tar.gz
 cd charm-8.0.0
 ./build charm++ multicore-linux-x86_64 -j ${NPROC} \
-    --with-production 
+    --with-production \
+    --libdir=${CONDA_PREFIX}/lib \
+    --incdir=${CONDA_PREFIX}/include
 cd ../
 ./config Linux-x86_64-g++ $(echo ${1} | sed 's/"//g') \
     --charm-arch multicore-linux-x86_64 --with-fftw3 \
