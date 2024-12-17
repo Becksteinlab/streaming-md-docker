@@ -12,8 +12,9 @@ export NPROC=$(nproc)
 # Setup NAMD
 git clone https://oauth2:$(cat /run/secrets/NAMD_ACCESS_TOKEN)@gitlab.com/tcbgUIUC/namd.git
 cd namd
-git checkout IMDv3-dev
-tar xf charm-8.0.0.tar
+git checkout feature_imdv3
+wget https://github.com/charmplusplus/charm/archive/refs/tags/v8.0.0.tar.gz
+tar xf v8.0.0.tar.gz
 cd charm-8.0.0
 ./build charm++ multicore-linux-x86_64 -j ${NPROC} \
     --with-production 
