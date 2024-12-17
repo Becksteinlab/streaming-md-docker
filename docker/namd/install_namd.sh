@@ -22,8 +22,8 @@ cd ../
 ./config Linux-x86_64-g++ $(echo ${1} | sed 's/"//g') \
     --charm-arch multicore-linux-x86_64 --with-fftw3 \
     --tcl-prefix ${CONDA_PREFIX} \
-    --cxx-opts="-I/usr/local/cuda/include -I${CONDA_PREFIX}/include -L/usr/local/cuda/lib64 -L${CONDA_PREFIX}/lib" \
-    --cc-opts="-I/usr/local/cuda/include -I${CONDA_PREFIX}/include -L/usr/local/cuda/lib64 -L${CONDA_PREFIX}/lib" \
+    --cxx-opts "-I/usr/local/cuda/include -I${CONDA_PREFIX}/include -L/usr/local/cuda/lib64 -L${CONDA_PREFIX}/lib" \
+    --cc-opts "-I/usr/local/cuda/include -I${CONDA_PREFIX}/include -L/usr/local/cuda/lib64 -L${CONDA_PREFIX}/lib" \
     --cuda-prefix /usr/local/cuda
 
 cd Linux-x86_64-g++
