@@ -13,7 +13,7 @@ jobs:
         strategy:
           matrix:
             arch: [amd64]
-            build: ["Common-CPU", "Common-GPU"]
+            build: ["common-cpu", "common-gpu"]
 
         permissions:
           contents: read
@@ -34,7 +34,7 @@ jobs:
           - name: Option
             id: option
             run: |
-              if [ "${{ matrix.build }}" == "Common-CPU" ]; then
+              if [ "${{ matrix.build }}" == "common-cpu" ]; then
                 echo GMX_OPTS= >> $GITHUB_ENV
                 echo LMP_OPTS= >> $GITHUB_ENV
                 echo NAMD_OPTS= >> $GITHUB_ENV
@@ -46,19 +46,19 @@ jobs:
                 echo DOCKERFILE="GPU.Dockerfile" >> $GITHUB_ENV
               fi
 
-          - name: Build and push Docker image
-            uses: docker/build-push-action@v5
-            with:
-              context: ./docker/common
-              push: false
-              file: ./docker/common/${{ env.DOCKERFILE }}
-              build-args: |
-                GMX_OPTS="${{ env.GMX_OPTS }}"
-                LMP_OPTS="${{ env.LMP_OPTS }}"
-                CUDA_VER=12.4.1
-                DISTRO_ARCH=${{ matrix.arch }}
-                DISTRO_VER=22.04
-                DISTRO_NAME=ubuntu
+          # - name: Build and push Docker image
+          #   uses: docker/build-push-action@v5
+          #   with:
+          #     context: ./docker/common
+          #     push: false
+          #     file: ./docker/common/${{ env.DOCKERFILE }}
+          #     build-args: |
+          #       GMX_OPTS="${{ env.GMX_OPTS }}"
+          #       LMP_OPTS="${{ env.LMP_OPTS }}"
+          #       CUDA_VER=12.4.1
+          #       DISTRO_ARCH=${{ matrix.arch }}
+          #       DISTRO_VER=22.04
+          #       DISTRO_NAME=ubuntu
             
           - name: Build and push private NAMD Docker image
             uses: docker/build-push-action@v5

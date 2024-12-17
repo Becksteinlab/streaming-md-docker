@@ -85,6 +85,7 @@ ARG NAMD_OPTS=""
 
 COPY . .
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
+RUN chmod +x install_namd.sh
 RUN --mount=type=secret,id=NAMD_ACCESS_TOKEN \
     . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_namd.sh "$NAMD_OPTS"
 

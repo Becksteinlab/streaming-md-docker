@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         arch: [amd64]
-        build: ["Common-CPU", "Common-GPU"]
+        build: ["common-cpu", "common-gpu"]
 
     permissions:
       contents: read
@@ -47,7 +47,7 @@ jobs:
       - name: Option
         id: option
         run: |
-          if [ "${{ matrix.build }}" == "Common-CPU" ]; then
+          if [ "${{ matrix.build }}" == "common-cpu" ]; then
             echo GMX_OPTS= >> $GITHUB_ENV
             echo LMP_OPTS= >> $GITHUB_ENV
             echo NAMD_OPTS= >> $GITHUB_ENV
@@ -65,29 +65,29 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./docker/common
-          file: ./docker/common/${{ env.DOCKERFILE }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            GMX_OPTS="${{ env.GMX_OPTS }}"
-            LMP_OPTS="${{ env.LMP_OPTS }}"
-            CUDA_VER=12.4.1
-            DISTRO_ARCH=${{ matrix.arch }}
-            DISTRO_VER=22.04
-            DISTRO_NAME=ubuntu
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ./docker/common
+      #     file: ./docker/common/${{ env.DOCKERFILE }}
+      #     push: true
+      #     tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     build-args: |
+      #       GMX_OPTS="${{ env.GMX_OPTS }}"
+      #       LMP_OPTS="${{ env.LMP_OPTS }}"
+      #       CUDA_VER=12.4.1
+      #       DISTRO_ARCH=${{ matrix.arch }}
+      #       DISTRO_VER=22.04
+      #       DISTRO_NAME=ubuntu
 
       - name: Build and push private NAMD Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./docker/namd
           file: ./docker/namd/${{ env.DOCKERFILE }}
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
+          push: true
+          tags: ghcr.io/becksteinlab/streaming-namd-docker:main-${{ matrix.build }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NAMD_OPTS="${{ env.NAMD_OPTS }}"
