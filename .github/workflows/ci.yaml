@@ -65,7 +65,10 @@ jobs:
             with:
               context: ./docker/namd
               file: ./docker/namd/${{ env.DOCKERFILE }}
-              push: false
+              push: true
+              # REMOVEME
+              tags: ghcr.io/becksteinlab/streaming-namd-docker:main-${{ matrix.build }}
+              labels: ${{ steps.meta.outputs.labels }}
               build-args: |
                 NAMD_OPTS="${{ env.NAMD_OPTS }}"
                 CUDA_VER=12.4.1
