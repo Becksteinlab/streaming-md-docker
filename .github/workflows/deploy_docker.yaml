@@ -50,10 +50,12 @@ jobs:
           if [ "${{ matrix.build }}" == "Common-CPU" ]; then
             echo GMX_OPTS= >> $GITHUB_ENV
             echo LMP_OPTS= >> $GITHUB_ENV
+            echo NAMD_OPTS= >> $GITHUB_ENV
             echo DOCKERFILE="CPU.Dockerfile" >> $GITHUB_ENV
           else
             echo GMX_OPTS="-DGMX_GPU=CUDA" >> $GITHUB_ENV
             echo LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" >> $GITHUB_ENV
+            echo NAMD_OPTS="--with-cuda" >> $GITHUB_ENV
             echo DOCKERFILE="GPU.Dockerfile" >> $GITHUB_ENV
           fi
 
@@ -78,3 +80,20 @@ jobs:
             DISTRO_ARCH=${{ matrix.arch }}
             DISTRO_VER=22.04
             DISTRO_NAME=ubuntu
+
+      - name: Build and push private NAMD Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/namd
+          file: ./docker/namd/${{ env.DOCKERFILE }}
+          push: false
+          tags: main-namd-${{ matrix.build }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NAMD_OPTS="${{ env.NAMD_OPTS }}"
+            CUDA_VER=12.4.1
+            DISTRO_ARCH=${{ matrix.arch }}
+            DISTRO_VER=22.04
+            DISTRO_NAME=ubuntu
+          secrets: | 
+            NAMD_ACCESS_TOKEN=${{ secrets.NAMD_ACCESS_TOKEN }}
