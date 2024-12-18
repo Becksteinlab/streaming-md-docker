@@ -20,6 +20,8 @@ jobs:
 
         permissions:
           contents: read
+          # NOTE: REMOVEME
+          packages: write
 
         steps:
           - name: Free disk space
