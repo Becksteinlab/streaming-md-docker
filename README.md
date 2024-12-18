@@ -50,10 +50,10 @@ docker run -it --runtime=nvidia --gpus=all streaming_md_docker_local
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
 
 ```bash
-docker pull ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
+docker pull ghcr.io/becksteinlab/streaming-md-docker:main-common-gpu
 ```
 
 ```bash
-docker run -it --runtime=nvidia --gpus=all ghcr.io/becksteinlab/streaming-md-docker:main-Common-GPU
+docker run -it --runtime=nvidia --gpus=all ghcr.io/becksteinlab/streaming-md-docker:main-common-gpu
 ```
 

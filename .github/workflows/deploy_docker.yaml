@@ -65,21 +65,21 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # - name: Build and push Docker image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./docker/common
-      #     file: ./docker/common/${{ env.DOCKERFILE }}
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     build-args: |
-      #       GMX_OPTS="${{ env.GMX_OPTS }}"
-      #       LMP_OPTS="${{ env.LMP_OPTS }}"
-      #       CUDA_VER=12.4.1
-      #       DISTRO_ARCH=${{ matrix.arch }}
-      #       DISTRO_VER=22.04
-      #       DISTRO_NAME=ubuntu
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./docker/common
+          file: ./docker/common/${{ env.DOCKERFILE }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GMX_OPTS="${{ env.GMX_OPTS }}"
+            LMP_OPTS="${{ env.LMP_OPTS }}"
+            CUDA_VER=12.4.1
+            DISTRO_ARCH=${{ matrix.arch }}
+            DISTRO_VER=22.04
+            DISTRO_NAME=ubuntu
 
       - name: Build and push private NAMD Docker image
         uses: docker/build-push-action@v5

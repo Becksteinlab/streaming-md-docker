@@ -20,8 +20,6 @@ jobs:
 
         permissions:
           contents: read
-          # NOTE: REMOVEME
-          packages: write
 
         steps:
           - name: Free disk space
@@ -35,13 +33,6 @@ jobs:
 
           - name: Checkout repository
             uses: actions/checkout@v4
-          
-          - name: Log in to the Container registry
-            uses: docker/login-action@v3
-            with:
-              registry: ${{ env.REGISTRY }}
-              username: ${{ github.actor }}
-              password: ${{ secrets.GITHUB_TOKEN }}
 
           - name: Option
             id: option
@@ -58,44 +49,31 @@ jobs:
                 echo DOCKERFILE="GPU.Dockerfile" >> $GITHUB_ENV
               fi
 
-          # - name: Build and push Docker image
-          #   uses: docker/build-push-action@v5
-          #   with:
-          #     context: ./docker/common
-          #     push: false
-          #     file: ./docker/common/${{ env.DOCKERFILE }}
-          #     build-args: |
-          #       GMX_OPTS="${{ env.GMX_OPTS }}"
-          #       LMP_OPTS="${{ env.LMP_OPTS }}"
-          #       CUDA_VER=12.4.1
-          #       DISTRO_ARCH=${{ matrix.arch }}
-          #       DISTRO_VER=22.04
-          #       DISTRO_NAME=ubuntu
-
+          - name: Build and push Docker image
+            uses: docker/build-push-action@v5
+            with:
+              context: ./docker/common
+              push: false
+              file: ./docker/common/${{ env.DOCKERFILE }}
+              build-args: |
+                GMX_OPTS="${{ env.GMX_OPTS }}"
+                LMP_OPTS="${{ env.LMP_OPTS }}"
+                CUDA_VER=12.4.1
+                DISTRO_ARCH=${{ matrix.arch }}
+                DISTRO_VER=22.04
+                DISTRO_NAME=ubuntu
+            
           - name: Build and push private NAMD Docker image
             uses: docker/build-push-action@v5
             with:
               context: ./docker/namd
-              file: ./docker/namd/TMP.Dockerfile
-              push: true
-              # REMOVEME
-              tags: ghcr.io/becksteinlab/streaming-namd-docker:main-${{ matrix.build }}
-              labels: ${{ steps.meta.outputs.labels }}
-            
-          # - name: Build and push private NAMD Docker image
-          #   uses: docker/build-push-action@v5
-          #   with:
-          #     context: ./docker/namd
-          #     file: ./docker/namd/${{ env.DOCKERFILE }}
-          #     push: true
-          #     # REMOVEME
-          #     tags: ghcr.io/becksteinlab/streaming-namd-docker:main-${{ matrix.build }}
-          #     labels: ${{ steps.meta.outputs.labels }}
-          #     build-args: |
-          #       NAMD_OPTS="${{ env.NAMD_OPTS }}"
-          #       CUDA_VER=12.4.1
-          #       DISTRO_ARCH=${{ matrix.arch }}
-          #       DISTRO_VER=22.04
-          #       DISTRO_NAME=ubuntu
-          #     secrets: | 
-          #       NAMD_ACCESS_TOKEN=${{ secrets.NAMD_ACCESS_TOKEN }}
+              file: ./docker/namd/${{ env.DOCKERFILE }}
+              push: false
+              build-args: |
+                NAMD_OPTS="${{ env.NAMD_OPTS }}"
+                CUDA_VER=12.4.1
+                DISTRO_ARCH=${{ matrix.arch }}
+                DISTRO_VER=22.04
+                DISTRO_NAME=ubuntu
+              secrets: | 
+                NAMD_ACCESS_TOKEN=${{ secrets.NAMD_ACCESS_TOKEN }}
