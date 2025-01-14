@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
 # Setup LAMMPS
 git clone https://github.com/ljwoods2/lammps.git
 cd lammps
-git checkout imd-v3-integration
+git checkout develop
 mkdir build
 cd build
 cmake ../cmake/ \
