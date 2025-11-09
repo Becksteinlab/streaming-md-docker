@@ -6,9 +6,9 @@ export NPROC=$(nproc)
 export LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
 export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
 
-git clone https://gitlab.com/ljwoods2/gromacs.git
+git clone https://gitlab.com/heydenlabasu/streaming-md/gromacs.git
 cd gromacs
-git checkout imd-v3
+git checkout imdv3-sans-tests
 mkdir build
 cd build
 cmake .. \
