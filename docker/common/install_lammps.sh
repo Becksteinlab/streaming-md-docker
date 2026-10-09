@@ -28,4 +28,5 @@ cmake ../cmake/ \
     -DCMAKE_LIBRARY_PATH="/usr/local/cuda/lib64;${CONDA_PREFIX}/lib" \
     -DCMAKE_INCLUDE_PATH="/usr/local/cuda/include;${CONDA_PREFIX}/include"
 cmake --build . -j ${NPROC}
-make install
+# Remove sources/build tree (keeps build layers small)
+make install && cd /opt && rm -rf "${SRC_DIR}"

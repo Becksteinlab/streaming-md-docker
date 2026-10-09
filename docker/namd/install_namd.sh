@@ -39,4 +39,5 @@ cd Linux-x86_64-g++
 make -j ${NPROC}
 
 mkdir /opt/namd-${NAME}
-mv ${SRC_DIR}/Linux-x86_64-g++/namd3 /opt/namd-${NAME}/
+# Remove sources/build tree and the clone (it contains the access token in .git/config)
+mv ${SRC_DIR}/Linux-x86_64-g++/namd3 /opt/namd-${NAME}/ && cd /opt && rm -rf "${SRC_DIR}"
