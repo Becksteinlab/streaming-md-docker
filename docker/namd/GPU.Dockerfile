@@ -86,11 +86,18 @@ FROM conda AS build
 
 ARG NAMD_OPTS=""
 
+# Branches of https://gitlab.com/tcbgUIUC/namd built for each IMD version.
+ARG NAMD_IMDV2_BRANCH="vanilla-benchmarking"
+ARG NAMD_IMDV3_BRANCH="imdv3-benchmarking"
+
 COPY . .
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
 RUN chmod +x install_namd.sh
+# Each build gets its own layer and installs to /opt/namd-<imd version>.
 RUN --mount=type=secret,id=NAMD_ACCESS_TOKEN \
-    . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_namd.sh "$NAMD_OPTS"
+    . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_namd.sh "$NAMD_OPTS" imdv2 "$NAMD_IMDV2_BRANCH"
+RUN --mount=type=secret,id=NAMD_ACCESS_TOKEN \
+    . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_namd.sh "$NAMD_OPTS" imdv3 "$NAMD_IMDV3_BRANCH"
 
 # Delete the heavy environment but keep conda binaries
 RUN . /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
@@ -124,8 +131,19 @@ COPY --from=build /opt/docker/bin/entrypoint_source /opt/docker/bin/entrypoint_s
 # Create the new lightweight env
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
 
-COPY --from=build /opt/namd-build /opt/namd-build
-RUN ln -s /opt/namd-build/namd3  /bin/namd3
+# Re-declare the build args so they can be recorded as image labels / used below.
+ARG NAMD_IMDV2_BRANCH="vanilla-benchmarking"
+ARG NAMD_IMDV3_BRANCH="imdv3-benchmarking"
+# Which version the plain `namd3` command points to.
+ARG DEFAULT_IMD_VERSION="imdv3"
+LABEL namd-imdv2.branch="${NAMD_IMDV2_BRANCH}" \
+      namd-imdv3.branch="${NAMD_IMDV3_BRANCH}"
+
+COPY --from=build /opt/namd-imdv2 /opt/namd-imdv2
+COPY --from=build /opt/namd-imdv3 /opt/namd-imdv3
+RUN ln -s /opt/namd-imdv2/namd3 /bin/namd3-imdv2 && \
+    ln -s /opt/namd-imdv3/namd3 /bin/namd3-imdv3 && \
+    ln -s /opt/namd-${DEFAULT_IMD_VERSION}/namd3 /bin/namd3
 
 # Ensure that all containers start with tini and the user selected process.
 # Activate the `conda` environment `base`.

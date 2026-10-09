@@ -72,6 +72,19 @@ docker run -it streaming_md_docker_local lmp-imdv2 -h
 docker run -it streaming_md_docker_local lmp-imdv3 -h
 ```
 
+## NAMD (private image)
+
+The NAMD image (`docker/namd`, not published publicly) follows the same pattern, built from
+[`tcbgUIUC/namd`](https://gitlab.com/tcbgUIUC/namd) with the `NAMD_ACCESS_TOKEN` secret:
+
+| Build         | Source branch          | Install dir        | Command        |
+|---------------|------------------------|--------------------|----------------|
+| `namd-imdv2`  | `vanilla-benchmarking` | `/opt/namd-imdv2`  | `namd3-imdv2`  |
+| `namd-imdv3`  | `imdv3-benchmarking`   | `/opt/namd-imdv3`  | `namd3-imdv3`  |
+
+Plain `namd3` points to the IMDv3 build (`DEFAULT_IMD_VERSION`). The branches are the build
+arguments `NAMD_IMDV2_BRANCH` and `NAMD_IMDV3_BRANCH`.
+
 # Using a prebuilt image
 
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
