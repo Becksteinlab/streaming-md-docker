@@ -45,6 +45,33 @@ To run with a GPU exposed to your docker container, install the [nvidia containe
 docker run -it --runtime=nvidia --gpus=all streaming_md_docker_local
 ```
 
+# Included builds (IMDv2 and IMDv3)
+
+Each image contains four builds, one per code and IMD version:
+
+| Build            | Source branch                                                                                   | Install dir            | Command       |
+|------------------|-------------------------------------------------------------------------------------------------|------------------------|---------------|
+| `gromacs-imdv2`  | [`vanilla-benchmarking`](https://gitlab.com/heydenlabasu/streaming-md/gromacs/-/tree/vanilla-benchmarking) (GitLab) | `/opt/gromacs-imdv2`   | `gmx-imdv2`   |
+| `gromacs-imdv3`  | [`imdv3-benchmarking`](https://gitlab.com/heydenlabasu/streaming-md/gromacs/-/tree/imdv3-benchmarking) (GitLab)     | `/opt/gromacs-imdv3`   | `gmx-imdv3`   |
+| `lammps-imdv2`   | [`vanilla-benchmarking`](https://github.com/Becksteinlab/lammps/tree/vanilla-benchmarking) (GitHub)                | `/opt/lammps-imdv2`    | `lmp-imdv2`   |
+| `lammps-imdv3`   | [`imdv3-benchmarking`](https://github.com/Becksteinlab/lammps/tree/imdv3-benchmarking) (GitHub)                    | `/opt/lammps-imdv3`    | `lmp-imdv3`   |
+
+The plain `gmx` and `lmp` commands point to the IMDv3 builds by default.
+The branches are build arguments (`GMX_IMDV2_BRANCH`, `GMX_IMDV3_BRANCH`,
+`LMP_IMDV2_BRANCH`, `LMP_IMDV3_BRANCH`) and the default can be changed with
+`--build-arg DEFAULT_IMD_VERSION=imdv2`. The branches used are recorded as image labels
+(e.g. `gromacs-imdv2.branch`).
+
+Example: call a specific version by using its suffixed command (these are just
+examples, any of the four commands in the table can be used the same way):
+
+```bash
+docker run -it streaming_md_docker_local gmx-imdv2 --version
+docker run -it streaming_md_docker_local gmx-imdv3 --version
+docker run -it streaming_md_docker_local lmp-imdv2 -h
+docker run -it streaming_md_docker_local lmp-imdv3 -h
+```
+
 # Using a prebuilt image
 
 We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
