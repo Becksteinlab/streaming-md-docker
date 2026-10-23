@@ -84,10 +84,21 @@ FROM conda AS build
 ARG LMP_OPTS=""
 ARG GMX_OPTS=""
 
+# Branches built for each IMD version.
+# GROMACS: https://gitlab.com/heydenlabasu/streaming-md/gromacs
+# LAMMPS:  https://github.com/Becksteinlab/lammps
+ARG GMX_IMDV2_BRANCH="vanilla-benchmarking"
+ARG GMX_IMDV3_BRANCH="imdv3-benchmarking"
+ARG LMP_IMDV2_BRANCH="vanilla-benchmarking"
+ARG LMP_IMDV3_BRANCH="imdv3-benchmarking"
+
 COPY . .
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
-RUN . /opt/conda/etc/profile.d/conda.sh &&  conda activate env && ./install_gromacs.sh "$GMX_OPTS"
-RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS"
+# Each build gets its own layer (cached independently) and installs to /opt/<code>-<imd version>.
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_gromacs.sh "$GMX_OPTS" imdv2 "$GMX_IMDV2_BRANCH"
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_gromacs.sh "$GMX_OPTS" imdv3 "$GMX_IMDV3_BRANCH"
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS" imdv2 "$LMP_IMDV2_BRANCH"
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate env && ./install_lammps.sh "$LMP_OPTS" imdv3 "$LMP_IMDV3_BRANCH"
 
 # Delete the heavy environment but keep conda binaries
 RUN . /opt/conda/etc/profile.d/conda.sh && conda remove -n env --all -y
@@ -121,11 +132,29 @@ COPY --from=build /opt/docker/bin/entrypoint_source /opt/docker/bin/entrypoint_s
 # Create the new lightweight env
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file runtime_env.yaml
 
-COPY --from=build /opt/gromacs_build /opt/gromacs_build
-RUN ln -s /opt/gromacs_build/bin/gmx /bin/gmx
+# Re-declare the build args so they can be recorded as image labels / used below.
+ARG GMX_IMDV2_BRANCH="vanilla-benchmarking"
+ARG GMX_IMDV3_BRANCH="imdv3-benchmarking"
+ARG LMP_IMDV2_BRANCH="vanilla-benchmarking"
+ARG LMP_IMDV3_BRANCH="imdv3-benchmarking"
+# Which version the plain `gmx` / `lmp` commands point to.
+ARG DEFAULT_IMD_VERSION="imdv3"
+LABEL gromacs-imdv2.branch="${GMX_IMDV2_BRANCH}" \
+      gromacs-imdv3.branch="${GMX_IMDV3_BRANCH}" \
+      lammps-imdv2.branch="${LMP_IMDV2_BRANCH}" \
+      lammps-imdv3.branch="${LMP_IMDV3_BRANCH}"
 
-COPY --from=build /opt/lammps_build /opt/lammps_build
-RUN ln -s /opt/lammps_build/bin/lmp /bin/lmp
+COPY --from=build /opt/gromacs-imdv2 /opt/gromacs-imdv2
+COPY --from=build /opt/gromacs-imdv3 /opt/gromacs-imdv3
+RUN ln -s /opt/gromacs-imdv2/bin/gmx /bin/gmx-imdv2 && \
+    ln -s /opt/gromacs-imdv3/bin/gmx /bin/gmx-imdv3 && \
+    ln -s /opt/gromacs-${DEFAULT_IMD_VERSION}/bin/gmx /bin/gmx
+
+COPY --from=build /opt/lammps-imdv2 /opt/lammps-imdv2
+COPY --from=build /opt/lammps-imdv3 /opt/lammps-imdv3
+RUN ln -s /opt/lammps-imdv2/bin/lmp /bin/lmp-imdv2 && \
+    ln -s /opt/lammps-imdv3/bin/lmp /bin/lmp-imdv3 && \
+    ln -s /opt/lammps-${DEFAULT_IMD_VERSION}/bin/lmp /bin/lmp
 
 # Ensure that all containers start with tini and the user selected process.
 # Activate the `conda` environment `base`.

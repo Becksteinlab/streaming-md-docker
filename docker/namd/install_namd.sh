@@ -1,4 +1,11 @@
 #!/bin/bash
+# Usage: install_namd.sh "<namd config opts>" <name> <branch>
+#   e.g. install_namd.sh "--with-cuda" imdv3 imdv3-benchmarking
+# Builds NAMD from <branch> and installs namd3 to /opt/namd-<name>.
+NAMD_OPTS="${1}"
+NAME="${2}"
+BRANCH="${3}"
+
 export PATH="${PATH}:${CUDA_HOME}/bin"
 cd /opt/
 export HOME_DIR=${PWD}
@@ -10,8 +17,9 @@ export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:/usr/local/cuda/lib64
 export NPROC=$(nproc)
 
 # Setup NAMD
-git clone https://oauth2:$(cat /run/secrets/NAMD_ACCESS_TOKEN)@gitlab.com/tcbgUIUC/namd.git
-cd namd
+SRC_DIR=/opt/src/namd-${NAME}
+git clone --branch "${BRANCH}" https://oauth2:$(cat /run/secrets/NAMD_ACCESS_TOKEN)@gitlab.com/tcbgUIUC/namd.git "${SRC_DIR}"
+cd "${SRC_DIR}"
 wget https://github.com/charmplusplus/charm/archive/refs/tags/v8.0.0.tar.gz
 tar xf v8.0.0.tar.gz
 cd charm-8.0.0
@@ -20,7 +28,7 @@ cd charm-8.0.0
     --libdir=${CONDA_PREFIX}/lib \
     --incdir=${CONDA_PREFIX}/include
 cd ../
-./config Linux-x86_64-g++ $(echo ${1} | sed 's/"//g') \
+./config Linux-x86_64-g++ $(echo ${NAMD_OPTS} | sed 's/"//g') \
     --charm-arch multicore-linux-x86_64 --with-fftw3 \
     --tcl-prefix ${CONDA_PREFIX} \
     --cxx-opts "-I/usr/local/cuda/include -I${CONDA_PREFIX}/include -L/usr/local/cuda/lib64 -L${CONDA_PREFIX}/lib" \
@@ -30,5 +38,6 @@ cd ../
 cd Linux-x86_64-g++
 make -j ${NPROC}
 
-mkdir /opt/namd-build
-mv /opt/namd/Linux-x86_64-g++/namd3 /opt/namd-build/
+mkdir /opt/namd-${NAME}
+# Remove sources/build tree and the clone (it contains the access token in .git/config)
+mv ${SRC_DIR}/Linux-x86_64-g++/namd3 /opt/namd-${NAME}/ && cd /opt && rm -rf "${SRC_DIR}"
