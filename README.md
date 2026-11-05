@@ -12,6 +12,7 @@ The following arguments are required to build the container from source
 for a CPU-only build:
 ```bash
 docker buildx build -t streaming_md_docker_local \
+    -f ./docker/common/CPU.Dockerfile \
     --build-arg GMX_OPTS="" \
     --build-arg LMP_OPTS="" \
     --build-arg CUDA_VER=12.4.1 \
@@ -31,6 +32,7 @@ docker run -it streaming_md_docker_local
 For a GPU-build, you can do:
 ```bash
 docker buildx build -t streaming_md_docker_local \
+    -f ./docker/common/GPU.Dockerfile \
     --build-arg GMX_OPTS="-DGMX_GPU=CUDA" \
     --build-arg LMP_OPTS="-DPKG_GPU=on -DGPU_API=cuda" \
     --build-arg CUDA_VER=12.4.1 \
