@@ -9,6 +9,6 @@ dependencies:
   - fftw
   - tk
   - hdf5
-  - openmp
+  - libgomp
   - openmpi
   
