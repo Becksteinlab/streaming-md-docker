@@ -132,10 +132,21 @@ ARG LMP_IMDV2_BRANCH="vanilla-benchmarking"
 ARG LMP_IMDV3_BRANCH="imdv3-benchmarking"
 # Which version the plain `gmx` / `lmp` commands point to.
 ARG DEFAULT_IMD_VERSION="imdv3"
-LABEL gromacs-imdv2.branch="${GMX_IMDV2_BRANCH}" \
-      gromacs-imdv3.branch="${GMX_IMDV3_BRANCH}" \
-      lammps-imdv2.branch="${LMP_IMDV2_BRANCH}" \
-      lammps-imdv3.branch="${LMP_IMDV3_BRANCH}"
+# OCI image labels; CI overrides version, created and revision via docker/metadata-action.
+# Licenses: MIT (this repository), LGPL-2.1-or-later (GROMACS), GPL-2.0-only (LAMMPS).
+ARG IMAGE_VERSION=dev
+LABEL org.opencontainers.image.title="streaming-md-docker" \
+      org.opencontainers.image.description="GROMACS and LAMMPS with IMDv2/IMDv3 streaming (CUDA GPU build)" \
+      org.opencontainers.image.url="https://github.com/Becksteinlab/streaming-md-docker" \
+      org.opencontainers.image.documentation="https://github.com/Becksteinlab/streaming-md-docker#readme" \
+      org.opencontainers.image.source="https://github.com/Becksteinlab/streaming-md-docker" \
+      org.opencontainers.image.vendor="Becksteinlab" \
+      org.opencontainers.image.licenses="MIT AND LGPL-2.1-or-later AND GPL-2.0-only" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      io.github.becksteinlab.streaming-md.gromacs-imdv2.branch="${GMX_IMDV2_BRANCH}" \
+      io.github.becksteinlab.streaming-md.gromacs-imdv3.branch="${GMX_IMDV3_BRANCH}" \
+      io.github.becksteinlab.streaming-md.lammps-imdv2.branch="${LMP_IMDV2_BRANCH}" \
+      io.github.becksteinlab.streaming-md.lammps-imdv3.branch="${LMP_IMDV3_BRANCH}"
 
 COPY --from=build /opt/gromacs-imdv2 /opt/gromacs-imdv2
 COPY --from=build /opt/gromacs-imdv3 /opt/gromacs-imdv3

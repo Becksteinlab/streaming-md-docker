@@ -62,7 +62,7 @@ The plain `gmx` and `lmp` commands point to the IMDv3 builds by default.
 The branches are build arguments (`GMX_IMDV2_BRANCH`, `GMX_IMDV3_BRANCH`,
 `LMP_IMDV2_BRANCH`, `LMP_IMDV3_BRANCH`) and the default can be changed with
 `--build-arg DEFAULT_IMD_VERSION=imdv2`. The branches used are recorded as image labels
-(e.g. `gromacs-imdv2.branch`).
+(e.g. `io.github.becksteinlab.streaming-md.gromacs-imdv2.branch`), see [Image labels](#image-labels).
 
 Example: call a specific version by using its suffixed command (these are just
 examples, any of the four commands in the table can be used the same way):
@@ -87,9 +87,45 @@ The NAMD image (`docker/namd`, not published publicly) follows the same pattern,
 Plain `namd3` points to the IMDv3 build (`DEFAULT_IMD_VERSION`). The branches are the build
 arguments `NAMD_IMDV2_BRANCH` and `NAMD_IMDV3_BRANCH`.
 
+NAMD is distributed under its own [license](https://www.ks.uiuc.edu/Research/namd/license.html),
+which is why this image is not published publicly.
+
+# Image labels
+
+All images carry the standard [OCI image labels](https://github.com/opencontainers/image-spec/blob/main/annotations.md)
+(`org.opencontainers.image.*`: title, description, source, version, revision, created, licenses, ...)
+and record the source branch of each build under the `io.github.becksteinlab.streaming-md` namespace:
+
+| Label                                                       | Image  |
+|-------------------------------------------------------------|--------|
+| `io.github.becksteinlab.streaming-md.gromacs-imdv2.branch`  | common |
+| `io.github.becksteinlab.streaming-md.gromacs-imdv3.branch`  | common |
+| `io.github.becksteinlab.streaming-md.lammps-imdv2.branch`   | common |
+| `io.github.becksteinlab.streaming-md.lammps-imdv3.branch`   | common |
+| `io.github.becksteinlab.streaming-md.namd-imdv2.branch`     | NAMD   |
+| `io.github.becksteinlab.streaming-md.namd-imdv3.branch`     | NAMD   |
+
+> **Note:** Before November 2026 these labels had no namespace and were named
+> `gromacs-imdv2.branch`, `gromacs-imdv3.branch`, `lammps-imdv2.branch`, `lammps-imdv3.branch`,
+> `namd-imdv2.branch`, and `namd-imdv3.branch`. Images built before then only carry the old names.
+
+The `licenses` label lists the licenses of the software in the image as an
+[SPDX expression](https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/): MIT for this
+repository, `LGPL-2.1-or-later` for GROMACS, `GPL-2.0-only` for LAMMPS, and `LicenseRef-NAMD`
+for the NAMD license.
+
+Inspect the labels of an image with:
+
+```bash
+docker inspect --format '{{json .Config.Labels}}' streaming_md_docker_local
+```
+
 # Using a prebuilt image
 
-We publish prebuilt images using CI at `ghcr.io`. Pull the latest image using:
+We publish prebuilt images using CI at `ghcr.io`. Each push to `main` is tagged
+`main-<build>` (moves with every push) and `sha-<short commit>-<build>` (fixed to that commit),
+where `<build>` is `common-cpu` or `common-gpu`. Use the `sha-` tag to pin an exact image.
+Pull the latest image using:
 
 ```bash
 docker pull ghcr.io/becksteinlab/streaming-md-docker:main-common-gpu

@@ -64,6 +64,28 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: suffix=-${{ matrix.build }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+          labels: |
+            org.opencontainers.image.title=streaming-md-docker
+            org.opencontainers.image.description=GROMACS and LAMMPS with IMDv2/IMDv3 streaming (${{ matrix.build }})
+            org.opencontainers.image.licenses=MIT AND LGPL-2.1-or-later AND GPL-2.0-only
+
+      - name: Extract metadata (tags, labels) for NAMD Docker image
+        id: meta-namd
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/becksteinlab/streaming-namd-docker
+          flavor: suffix=-${{ matrix.build }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+          labels: |
+            org.opencontainers.image.title=streaming-namd-docker
+            org.opencontainers.image.description=NAMD with IMDv2/IMDv3 streaming (${{ matrix.build }})
+            org.opencontainers.image.licenses=MIT AND LicenseRef-NAMD
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -71,7 +93,7 @@ jobs:
           context: ./docker/common
           file: ./docker/common/${{ env.DOCKERFILE }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.build }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GMX_OPTS="${{ env.GMX_OPTS }}"
@@ -87,8 +109,8 @@ jobs:
           context: ./docker/namd
           file: ./docker/namd/${{ env.DOCKERFILE }}
           push: true
-          tags: ghcr.io/becksteinlab/streaming-namd-docker:main-${{ matrix.build }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-namd.outputs.tags }}
+          labels: ${{ steps.meta-namd.outputs.labels }}
           build-args: |
             NAMD_OPTS="${{ env.NAMD_OPTS }}"
             CUDA_VER=12.4.1

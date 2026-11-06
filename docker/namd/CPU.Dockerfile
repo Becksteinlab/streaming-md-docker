@@ -123,8 +123,19 @@ ARG NAMD_IMDV2_BRANCH="vanilla-benchmarking"
 ARG NAMD_IMDV3_BRANCH="imdv3-benchmarking"
 # Which version the plain `namd3` command points to.
 ARG DEFAULT_IMD_VERSION="imdv3"
-LABEL namd-imdv2.branch="${NAMD_IMDV2_BRANCH}" \
-      namd-imdv3.branch="${NAMD_IMDV3_BRANCH}"
+# OCI image labels; CI overrides version, created and revision via docker/metadata-action.
+# Licenses: MIT (this repository), custom NAMD license (https://www.ks.uiuc.edu/Research/namd/license.html).
+ARG IMAGE_VERSION=dev
+LABEL org.opencontainers.image.title="streaming-namd-docker" \
+      org.opencontainers.image.description="NAMD with IMDv2/IMDv3 streaming (CPU build)" \
+      org.opencontainers.image.url="https://github.com/Becksteinlab/streaming-md-docker" \
+      org.opencontainers.image.documentation="https://github.com/Becksteinlab/streaming-md-docker#namd-private-image" \
+      org.opencontainers.image.source="https://github.com/Becksteinlab/streaming-md-docker" \
+      org.opencontainers.image.vendor="Becksteinlab" \
+      org.opencontainers.image.licenses="MIT AND LicenseRef-NAMD" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      io.github.becksteinlab.streaming-md.namd-imdv2.branch="${NAMD_IMDV2_BRANCH}" \
+      io.github.becksteinlab.streaming-md.namd-imdv3.branch="${NAMD_IMDV3_BRANCH}"
 
 COPY --from=build /opt/namd-imdv2 /opt/namd-imdv2
 COPY --from=build /opt/namd-imdv3 /opt/namd-imdv3
