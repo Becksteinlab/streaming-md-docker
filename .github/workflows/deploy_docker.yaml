@@ -75,7 +75,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for NAMD Docker image
         id: meta-namd
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/becksteinlab/streaming-namd-docker
           flavor: suffix=-${{ matrix.build }}
