@@ -72,7 +72,7 @@ ARG NAMD_OPTS=""
 
 # Branches of https://gitlab.com/tcbgUIUC/namd built for each IMD version.
 ARG NAMD_IMDV2_BRANCH="vanilla-benchmarking"
-ARG NAMD_IMDV3_BRANCH="imdv3-benchmarking"
+ARG NAMD_IMDV3_BRANCH="fix-imdv3-gpures"
 
 COPY . .
 RUN . /opt/conda/etc/profile.d/conda.sh && conda env create --file env.yaml
@@ -120,7 +120,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
 
 # Re-declare the build args so they can be recorded as image labels / used below.
 ARG NAMD_IMDV2_BRANCH="vanilla-benchmarking"
-ARG NAMD_IMDV3_BRANCH="imdv3-benchmarking"
+ARG NAMD_IMDV3_BRANCH="fix-imdv3-gpures"
 # Which version the plain `namd3` command points to.
 ARG DEFAULT_IMD_VERSION="imdv3"
 # OCI image labels; CI overrides version, created and revision via docker/metadata-action.

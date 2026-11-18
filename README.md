@@ -82,7 +82,7 @@ The NAMD image (`docker/namd`, not published publicly) follows the same pattern,
 | Build         | Source branch          | Install dir        | Command        |
 |---------------|------------------------|--------------------|----------------|
 | `namd-imdv2`  | `vanilla-benchmarking` | `/opt/namd-imdv2`  | `namd3-imdv2`  |
-| `namd-imdv3`  | `imdv3-benchmarking`   | `/opt/namd-imdv3`  | `namd3-imdv3`  |
+| `namd-imdv3`  | `fix-imdv3-gpures`     | `/opt/namd-imdv3`  | `namd3-imdv3`  |
 
 Plain `namd3` points to the IMDv3 build (`DEFAULT_IMD_VERSION`). The branches are the build
 arguments `NAMD_IMDV2_BRANCH` and `NAMD_IMDV3_BRANCH`.

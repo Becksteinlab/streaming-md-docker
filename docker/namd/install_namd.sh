@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: install_namd.sh "<namd config opts>" <name> <branch>
-#   e.g. install_namd.sh "--with-cuda" imdv3 imdv3-benchmarking
+#   e.g. install_namd.sh "--with-cuda" imdv3 fix-imdv3-gpures
 # Builds NAMD from <branch> and installs namd3 to /opt/namd-<name>.
 NAMD_OPTS="${1}"
 NAME="${2}"
